@@ -1,0 +1,2593 @@
+{
+  "components": {
+    "schemas": {
+      "BillingProfileRequest": {
+        "properties": {
+          "cfdi_use": {
+            "title": "Cfdi Use",
+            "type": "string"
+          },
+          "legal_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Legal Name",
+            "type": "string"
+          },
+          "tax_id": {
+            "title": "Tax Id",
+            "type": "string"
+          },
+          "tax_system": {
+            "title": "Tax System",
+            "type": "string"
+          },
+          "zip": {
+            "title": "Zip",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tax_id",
+          "legal_name",
+          "tax_system",
+          "zip",
+          "cfdi_use"
+        ],
+        "title": "BillingProfileRequest",
+        "type": "object"
+      },
+      "CheckoutRequest": {
+        "properties": {
+          "offer": {
+            "title": "Offer",
+            "type": "string"
+          }
+        },
+        "required": [
+          "offer"
+        ],
+        "title": "CheckoutRequest",
+        "type": "object"
+      },
+      "CitationReference": {
+        "properties": {
+          "ambiguity_count": {
+            "default": 1,
+            "minimum": 1.0,
+            "title": "Ambiguity Count",
+            "type": "integer"
+          },
+          "canonical": {
+            "title": "Canonical",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "citation_catalog",
+              "node_metadata"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "canonical",
+              "derived",
+              "ambiguous_legacy"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "urn": {
+            "title": "Urn",
+            "type": "string"
+          }
+        },
+        "required": [
+          "canonical",
+          "urn",
+          "status",
+          "origin"
+        ],
+        "title": "CitationReference",
+        "type": "object"
+      },
+      "Coverage": {
+        "properties": {
+          "coverage_status": {
+            "default": "not_found",
+            "title": "Coverage Status",
+            "type": "string"
+          },
+          "federal": {
+            "default": false,
+            "title": "Federal",
+            "type": "boolean"
+          },
+          "requires_jurisprudence": {
+            "default": false,
+            "title": "Requires Jurisprudence",
+            "type": "boolean"
+          },
+          "requires_regulation": {
+            "default": false,
+            "title": "Requires Regulation",
+            "type": "boolean"
+          },
+          "state_specific": {
+            "default": false,
+            "title": "State Specific",
+            "type": "boolean"
+          }
+        },
+        "title": "Coverage",
+        "type": "object"
+      },
+      "DetectedTopic": {
+        "properties": {
+          "confidence": {
+            "default": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "name"
+        ],
+        "title": "DetectedTopic",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ItemTemporalCoverage": {
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "coverage_start_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Start Date"
+          },
+          "historical_audit": {
+            "default": false,
+            "title": "Historical Audit",
+            "type": "boolean"
+          },
+          "policy": {
+            "const": "current_baseline_and_prospective",
+            "default": "current_baseline_and_prospective",
+            "title": "Policy",
+            "type": "string"
+          },
+          "retrospective_exception": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrospective Exception"
+          },
+          "status": {
+            "enum": [
+              "covered",
+              "outside_coverage"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "as_of",
+          "status"
+        ],
+        "title": "ItemTemporalCoverage",
+        "type": "object"
+      },
+      "KeyCreateRequest": {
+        "properties": {
+          "name": {
+            "default": "",
+            "maxLength": 80,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "title": "KeyCreateRequest",
+        "type": "object"
+      },
+      "MapApplicableNorm": {
+        "properties": {
+          "articles": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Articles",
+            "type": "array"
+          },
+          "articles_available": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Articles Available",
+            "type": "array"
+          },
+          "articles_missing": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Articles Missing",
+            "type": "array"
+          },
+          "authority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authority"
+          },
+          "coverage_warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Warning"
+          },
+          "data_origin": {
+            "default": "official_ingestion",
+            "title": "Data Origin",
+            "type": "string"
+          },
+          "expected_citations_found": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Expected Citations Found",
+            "type": "array"
+          },
+          "expected_citations_missing": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Expected Citations Missing",
+            "type": "array"
+          },
+          "expected_citations_total": {
+            "default": 0,
+            "title": "Expected Citations Total",
+            "type": "integer"
+          },
+          "ingestion_status": {
+            "default": "metadata_only",
+            "title": "Ingestion Status",
+            "type": "string"
+          },
+          "jurisdiction": {
+            "default": "federal",
+            "title": "Jurisdiction",
+            "type": "string"
+          },
+          "matter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matter"
+          },
+          "norm": {
+            "title": "Norm",
+            "type": "string"
+          },
+          "norm_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Norm Type"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "relationships": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/NormRelationship"
+            },
+            "title": "Relationships",
+            "type": "array"
+          },
+          "relevance": {
+            "default": "secondary",
+            "title": "Relevance",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "sources": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "default": "vigente",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "norm",
+          "slug",
+          "reason"
+        ],
+        "title": "MapApplicableNorm",
+        "type": "object"
+      },
+      "MapArticle": {
+        "properties": {
+          "checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checksum"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "node_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Version Id"
+          },
+          "norm": {
+            "title": "Norm",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "stable_identifier": {
+            "title": "Stable Identifier",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "required": [
+          "id",
+          "norm",
+          "stable_identifier",
+          "label",
+          "text"
+        ],
+        "title": "MapArticle",
+        "type": "object"
+      },
+      "MapRequest": {
+        "properties": {
+          "date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "jurisdiction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdiction"
+          },
+          "mode": {
+            "default": "api",
+            "title": "Mode",
+            "type": "string"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "MapRequest",
+        "type": "object"
+      },
+      "MapResponse": {
+        "properties": {
+          "applicable_norms": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MapApplicableNorm"
+            },
+            "title": "Applicable Norms",
+            "type": "array"
+          },
+          "articles": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MapArticle"
+            },
+            "title": "Articles",
+            "type": "array"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/Coverage",
+            "default": {
+              "coverage_status": "not_found",
+              "federal": false,
+              "requires_jurisprudence": false,
+              "requires_regulation": false,
+              "state_specific": false
+            }
+          },
+          "detected_topics": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DetectedTopic"
+            },
+            "title": "Detected Topics",
+            "type": "array"
+          },
+          "matching_norms": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MapApplicableNorm"
+            },
+            "title": "Matching Norms",
+            "type": "array"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "traceability": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/TraceabilityItem"
+            },
+            "title": "Traceability",
+            "type": "array"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "MapResponse",
+        "type": "object"
+      },
+      "NodeReference": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "node_type": {
+            "title": "Node Type",
+            "type": "string"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Path"
+          },
+          "stable_identifier": {
+            "title": "Stable Identifier",
+            "type": "string"
+          },
+          "urn": {
+            "title": "Urn",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "urn",
+          "stable_identifier",
+          "node_type"
+        ],
+        "title": "NodeReference",
+        "type": "object"
+      },
+      "NormReference": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "jurisdiction": {
+            "title": "Jurisdiction",
+            "type": "string"
+          },
+          "matter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matter"
+          },
+          "norm_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Norm Type"
+          },
+          "official_name": {
+            "title": "Official Name",
+            "type": "string"
+          },
+          "short_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short Name"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "urn": {
+            "title": "Urn",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "urn",
+          "slug",
+          "official_name",
+          "jurisdiction"
+        ],
+        "title": "NormReference",
+        "type": "object"
+      },
+      "NormRelationship": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "relationship_type": {
+            "title": "Relationship Type",
+            "type": "string"
+          },
+          "source_norm_id": {
+            "title": "Source Norm Id",
+            "type": "string"
+          },
+          "target_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Name"
+          },
+          "target_norm_id": {
+            "title": "Target Norm Id",
+            "type": "string"
+          },
+          "target_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Slug"
+          }
+        },
+        "required": [
+          "id",
+          "source_norm_id",
+          "target_norm_id",
+          "relationship_type"
+        ],
+        "title": "NormRelationship",
+        "type": "object"
+      },
+      "NormativePackageItem": {
+        "properties": {
+          "citation": {
+            "$ref": "#/components/schemas/CitationReference"
+          },
+          "match_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Match Reasons",
+            "type": "array"
+          },
+          "node": {
+            "$ref": "#/components/schemas/NodeReference"
+          },
+          "norm": {
+            "$ref": "#/components/schemas/NormReference"
+          },
+          "score": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "number"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceReference"
+          },
+          "temporal_coverage": {
+            "$ref": "#/components/schemas/ItemTemporalCoverage"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "version": {
+            "$ref": "#/components/schemas/VersionReference"
+          }
+        },
+        "required": [
+          "norm",
+          "node",
+          "version",
+          "citation",
+          "text",
+          "source",
+          "temporal_coverage",
+          "score"
+        ],
+        "title": "NormativePackageItem",
+        "type": "object"
+      },
+      "PackageRelationship": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "relationship_type": {
+            "title": "Relationship Type",
+            "type": "string"
+          },
+          "source_norm_urn": {
+            "title": "Source Norm Urn",
+            "type": "string"
+          },
+          "target_norm_urn": {
+            "title": "Target Norm Urn",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_norm_urn",
+          "target_norm_urn",
+          "relationship_type"
+        ],
+        "title": "PackageRelationship",
+        "type": "object"
+      },
+      "ResolveCoverage": {
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "coverage_start_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Start Date"
+          },
+          "historical_audit": {
+            "default": false,
+            "title": "Historical Audit",
+            "type": "boolean"
+          },
+          "policy": {
+            "const": "current_baseline_and_prospective",
+            "default": "current_baseline_and_prospective",
+            "title": "Policy",
+            "type": "string"
+          },
+          "retrospective_exception": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrospective Exception"
+          },
+          "status": {
+            "enum": [
+              "covered",
+              "partial",
+              "outside_coverage",
+              "future_not_available",
+              "not_found"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "as_of",
+          "status"
+        ],
+        "title": "ResolveCoverage",
+        "type": "object"
+      },
+      "ResolveRequest": {
+        "properties": {
+          "date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "jurisdiction": {
+            "default": "federal",
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "Jurisdiction",
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "norm": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Norm"
+          },
+          "query": {
+            "maxLength": 2000,
+            "minLength": 2,
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "ResolveRequest",
+        "type": "object"
+      },
+      "ResolveResponse": {
+        "properties": {
+          "contract_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/ResolveCoverage"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NormativePackageItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          },
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "relationships": {
+            "items": {
+              "$ref": "#/components/schemas/PackageRelationship"
+            },
+            "title": "Relationships",
+            "type": "array"
+          },
+          "retrieval": {
+            "$ref": "#/components/schemas/RetrievalMetadata"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "package_id",
+          "query",
+          "retrieval",
+          "coverage"
+        ],
+        "title": "ResolveResponse",
+        "type": "object"
+      },
+      "RetrievalMetadata": {
+        "properties": {
+          "inferred_norm": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inferred Norm"
+          },
+          "query_normalized": {
+            "title": "Query Normalized",
+            "type": "string"
+          },
+          "semantic_available": {
+            "default": false,
+            "title": "Semantic Available",
+            "type": "boolean"
+          },
+          "semantic_used": {
+            "default": false,
+            "title": "Semantic Used",
+            "type": "boolean"
+          },
+          "strategy": {
+            "const": "structured_full_text",
+            "default": "structured_full_text",
+            "title": "Strategy",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_normalized"
+        ],
+        "title": "RetrievalMetadata",
+        "type": "object"
+      },
+      "SourceReference": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "is_official": {
+            "default": false,
+            "title": "Is Official",
+            "type": "boolean"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "title": "SourceReference",
+        "type": "object"
+      },
+      "TraceabilityItem": {
+        "properties": {
+          "confidence": {
+            "default": "medium",
+            "title": "Confidence",
+            "type": "string"
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id"
+          },
+          "node_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Version Id"
+          },
+          "norm_slug": {
+            "title": "Norm Slug",
+            "type": "string"
+          },
+          "topic_slug": {
+            "title": "Topic Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic_slug",
+          "norm_slug"
+        ],
+        "title": "TraceabilityItem",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VersionReference": {
+        "properties": {
+          "checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checksum"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "urn": {
+            "title": "Urn",
+            "type": "string"
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "required": [
+          "id",
+          "urn"
+        ],
+        "title": "VersionReference",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "APIKeyHeader": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "API mexicana de consulta normativa estructurada",
+    "title": "Lex API MX",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/account": {
+      "get": {
+        "operationId": "get_account",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Account",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/billing-profile": {
+      "put": {
+        "operationId": "update_billing_profile",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BillingProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Billing Profile",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/checkout": {
+      "post": {
+        "operationId": "create_checkout",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Checkout",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/keys": {
+      "get": {
+        "operationId": "list_keys",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Keys",
+        "tags": [
+          "account"
+        ]
+      },
+      "post": {
+        "operationId": "create_key",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Key",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/keys/{key_id}": {
+      "delete": {
+        "operationId": "revoke_key",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Key Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revoke Key",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/ledger": {
+      "get": {
+        "operationId": "list_ledger",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 366,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Ledger",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/payments": {
+      "get": {
+        "operationId": "list_payments",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Payments",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/payments/{payment_id}/cfdi": {
+      "post": {
+        "operationId": "request_cfdi",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "payment_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Payment Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Request Cfdi",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/payments/{payment_id}/cfdi.{file_format}": {
+      "get": {
+        "operationId": "download_cfdi",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "payment_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Payment Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "file_format",
+            "required": true,
+            "schema": {
+              "enum": [
+                "pdf",
+                "xml"
+              ],
+              "title": "File Format",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Cfdi",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/portal": {
+      "post": {
+        "operationId": "create_portal",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Portal",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/articulos/search": {
+      "get": {
+        "operationId": "search_articulos",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "materia",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Materia"
+            }
+          },
+          {
+            "in": "query",
+            "name": "jurisdiccion",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jurisdiccion"
+            }
+          },
+          {
+            "in": "query",
+            "name": "norma",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Norma"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fecha",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fecha"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Search Articulos",
+        "tags": [
+          "articulos"
+        ]
+      }
+    },
+    "/api/v1/articulos/{id}": {
+      "get": {
+        "operationId": "get_articulo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fecha",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fecha"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Get Articulo",
+        "tags": [
+          "articulos"
+        ]
+      }
+    },
+    "/api/v1/articulos/{id}/historial": {
+      "get": {
+        "operationId": "get_historial",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Get Historial",
+        "tags": [
+          "articulos"
+        ]
+      }
+    },
+    "/api/v1/billing/ledger": {
+      "get": {
+        "operationId": "list_credit_ledger",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 366,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "List Credit Ledger",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/billing/plans": {
+      "get": {
+        "operationId": "list_commercial_plans",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "include_drafts",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Drafts",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "List Commercial Plans",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/billing/summary": {
+      "get": {
+        "operationId": "get_billing_summary",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Get Billing Summary",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/checkout/catalog": {
+      "get": {
+        "description": "Planes y recargas a la venta. Montos en centavos MXN con IVA incluido.",
+        "operationId": "get_catalog",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Catalog",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/map": {
+      "post": {
+        "operationId": "normative_map",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MapRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Normative Map",
+        "tags": [
+          "mapa-normativo"
+        ]
+      }
+    },
+    "/api/v1/normas": {
+      "get": {
+        "operationId": "list_normas",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "materia",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Materia"
+            }
+          },
+          {
+            "in": "query",
+            "name": "jurisdiccion",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Jurisdiccion"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "List Normas",
+        "tags": [
+          "normas"
+        ]
+      }
+    },
+    "/api/v1/normas/{slug}": {
+      "get": {
+        "operationId": "get_norma",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Get Norma",
+        "tags": [
+          "normas"
+        ]
+      }
+    },
+    "/api/v1/normas/{slug}/estructura": {
+      "get": {
+        "description": "Árbol de la norma. `include_text=true` agrega el texto vigente de cada nodo y\nrequiere un plan de la API (`403 paid_plan_required` en el plan gratuito).",
+        "operationId": "get_estructura",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "title": "Slug",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fecha",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fecha"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_text",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Text",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Get Estructura",
+        "tags": [
+          "normas"
+        ]
+      }
+    },
+    "/api/v1/resolve": {
+      "post": {
+        "operationId": "resolve_package",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolveResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Resolve Package",
+        "tags": [
+          "resolucion-normativa"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    }
+  }
+}

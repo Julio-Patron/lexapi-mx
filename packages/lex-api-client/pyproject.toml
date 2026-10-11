@@ -1,0 +1,36 @@
+[project]
+name = "lex-api-mx-client"
+version = "0.1.2"
+description = "Cliente Python de Lex API MX: legislación federal mexicana vigente con fuente, checksum y vigencia"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Lex API MX", email = "admin@lexapi.mx" }]
+requires-python = ">=3.11"
+keywords = ["mexico", "legislacion", "leyes", "legal", "api", "sdk"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: Spanish",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "httpx>=0.28",
+]
+
+[project.urls]
+Homepage = "https://lexapi.mx"
+Documentation = "https://lexapi.mx/docs"
+Repository = "https://github.com/Julio-Patron/lexapi-mx"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lex_api_mx"]
