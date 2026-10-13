@@ -3,7 +3,7 @@
   "name": "io.github.Julio-Patron/lex-api-mx",
   "title": "Lex API MX",
   "description": "Legislación federal mexicana vigente con fuente, checksum y vigencia para agentes de IA",
-  "version": "0.1.2",
+  "version": "0.3.0",
   "websiteUrl": "https://lexapi.mx",
   "repository": {
     "url": "https://github.com/Julio-Patron/lexapi-mx",
@@ -15,7 +15,7 @@
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "lex-api-mx-mcp",
-      "version": "0.1.2",
+      "version": "0.3.0",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
@@ -23,7 +23,7 @@
       "environmentVariables": [
         {
           "name": "LEX_API_MX_KEY",
-          "description": "Clave de API; créala gratis en https://lexapi.mx/#cuenta",
+          "description": "Clave de API; créala gratis en https://lexapi.mx/cuenta",
           "isRequired": true,
           "isSecret": true,
           "format": "string"

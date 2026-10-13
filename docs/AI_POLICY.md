@@ -4,9 +4,9 @@ Vigente desde el 2026-10-10.
 
 ## Lo que hace la API
 
-Lex API MX es un motor normativo estructurado: devuelve texto oficial vigente,
-estructura (títulos, capítulos, artículos, fracciones), fuente, checksum SHA-256
-y periodo de vigencia. No genera texto con modelos de lenguaje ni emite
+Lex API MX es un motor normativo estructurado: devuelve el texto vigente de cada
+norma tomado de su fuente oficial, estructura (títulos, capítulos, artículos,
+fracciones), fuente, checksum SHA-256 y periodo de vigencia. No genera texto con modelos de lenguaje ni emite
 explicaciones, resúmenes o recomendaciones.
 
 ## Lo que se espera de los agentes y aplicaciones que la usan

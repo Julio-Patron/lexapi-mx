@@ -24,8 +24,9 @@ identificadores públicos estables usan URN versionadas:
 | Paquete | `urn:lexapi-mx:package:v1:{sha256}` |
 
 El `package_id` se calcula sobre versión de contrato, consulta normalizada,
-fecha solicitada y versiones devueltas. La misma consulta sobre las mismas
-versiones produce el mismo identificador.
+fecha solicitada y versiones devueltas: las de cada item y, cuando un artículo
+trae `full_text`, las de sus fracciones e incisos. La misma consulta sobre las
+mismas versiones produce el mismo identificador.
 
 ## Citas
 
@@ -44,6 +45,20 @@ oficial, omite duplicados humanos y emite advertencia.
 
 Los números compuestos (`1390 Bis 1`, `195-Z-40`, `58-14`) se conservan tal
 cual en las citas.
+
+## Artículo completo
+
+En el corpus cada artículo es un árbol: el nodo del artículo lleva el
+encabezado y cada fracción, inciso o apartado es un nodo con su propia versión.
+Cuando el nodo de un item es un artículo, el item agrega tres campos opcionales:
+
+- `full_text`: el artículo con sus fracciones, incisos y apartados en el orden
+  del documento; fracciones e incisos llevan su marcador («I.», «a)»);
+- `full_text_checksum`: SHA-256 de `full_text`;
+- `components`: cada nodo que forma `full_text`, el artículo primero, con su
+  `node_version_id`, el checksum de su versión almacenada y su vigencia.
+
+`text` y `version` siguen siendo los del nodo del artículo.
 
 ## Cobertura temporal
 

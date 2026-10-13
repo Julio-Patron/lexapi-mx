@@ -4,13 +4,14 @@
 
 # Lex API MX
 
-**La legislación federal mexicana vigente, como API.** Cada artículo con su
+**La legislación federal mexicana vigente, como servidor MCP y API.** Cada artículo con su
 fuente oficial, su checksum SHA-256 y su periodo de vigencia, listo para que tu
 aplicación o tu agente de IA cite la ley sin construir ni mantener un corpus.
 
 Sistema de inteligencia jurídica · [lexapi.mx](https://lexapi.mx) ·
-[Documentación de la API](https://api.lexapi.mx/docs) ·
-[Crear cuenta gratis](https://lexapi.mx/#cuenta)
+[Documentación](https://lexapi.mx/docs) ·
+[Probar sin clave](https://lexapi.mx/probar) ·
+[Crear cuenta gratis](https://lexapi.mx/cuenta)
 
 ## Para quién
 
@@ -36,9 +37,10 @@ presenta texto vigente como histórico.
 
 ## Empieza en cinco minutos
 
-**1. Crea tu cuenta** en [lexapi.mx/#cuenta](https://lexapi.mx/#cuenta): te
+**1. Crea tu cuenta** en [lexapi.mx/cuenta](https://lexapi.mx/cuenta): te
 enviamos un enlace al correo, sin contraseña ni tarjeta. El plan gratuito trae
-500 créditos al mes y una clave de API que se muestra una sola vez.
+500 créditos al mes, hasta 2 claves activas y 10 peticiones por minuto; cada
+clave de API se muestra una sola vez.
 
 **2. Conecta tu agente (MCP).** Claude Code:
 
@@ -91,21 +93,26 @@ Guía: [`docs/QUICKSTART.md`](docs/QUICKSTART.md) · Referencia:
 | Buscar artículos, obtener un artículo, su historial, la estructura de una norma | 1 |
 | Mapa normativo: qué leyes aplican a un caso (`POST /map`, planes de la API) | 2 |
 
-Solo se cobran respuestas exitosas; un reintento con la misma `Idempotency-Key`
-y la misma petición no se cobra dos veces. El texto completo de una norma
-(`include_text`) y el mapa normativo están incluidos en los planes de la API.
+Solo se cobran respuestas exitosas con resultado: una búsqueda sin artículos o
+una fecha anterior al inicio de cobertura no se cobran, y un reintento con la
+misma `Idempotency-Key` y la misma petición no se cobra dos veces. El texto
+completo de una norma (`include_text`) y el mapa normativo están incluidos en
+los planes de la API.
 
 ## Planes
 
 | Plan | Incluye | Precio (MXN, IVA incluido) |
 |---|---|---|
-| Gratis | 500 créditos al mes, API y servidor MCP, sin tarjeta | $0 |
-| API Inicial | 10,000 créditos al mes, mapa normativo y texto completo de normas | $499 al mes o $4,990 al año |
-| API Profesional | 50,000 créditos al mes, mapa normativo y texto completo de normas | $1,499 al mes o $14,990 al año |
+| Plan gratuito | 500 créditos al mes, API y servidor MCP, sin tarjeta; hasta 2 claves, 10 peticiones por minuto y 200 al día por cuenta, búsquedas de hasta 10 artículos | $0 |
+| API Inicial | 10,000 créditos al mes, mapa normativo y texto completo de normas; hasta 10 claves, 120 peticiones por minuto por clave, búsquedas de hasta 50 artículos | $499 al mes o $4,990 al año |
+| API Profesional | 50,000 créditos al mes, mapa normativo y texto completo de normas; hasta 10 claves, 120 peticiones por minuto por clave, búsquedas de hasta 50 artículos | $1,499 al mes o $14,990 al año |
 | Recarga | 1,000 créditos que no caducan | $100 |
 
-Contratación y recargas en [lexapi.mx/#cuenta](https://lexapi.mx/#cuenta), con
-factura CFDI 4.0. ¿Volumen, condiciones o SLA a la medida? Escríbenos a
+Contratación y recargas en [lexapi.mx/cuenta](https://lexapi.mx/cuenta). La
+factura CFDI 4.0 se emite desde tu cuenta en cuanto activemos la facturación
+electrónica; mientras, el pago queda registrado. Al superar un límite de uso la
+API responde `429` con `Retry-After`. ¿Volumen, condiciones o SLA a la medida?
+Escríbenos a
 [admin@lexapi.mx](mailto:admin@lexapi.mx).
 
 ## Qué hay en este repositorio

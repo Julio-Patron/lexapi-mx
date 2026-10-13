@@ -1,7 +1,7 @@
 # Lex API MX — Especificación de API
 
-**Base URL:** `https://api.lexapi.mx/api/v1` · Documentación interactiva:
-[api.lexapi.mx/docs](https://api.lexapi.mx/docs) · Contrato OpenAPI:
+**Base URL:** `https://api.lexapi.mx/api/v1` · Guía: [lexapi.mx/docs](https://lexapi.mx/docs)
+· Referencia interactiva: [lexapi.mx/docs/api](https://lexapi.mx/docs/api) · Contrato OpenAPI:
 [`openapi-v1.json`](openapi-v1.json)
 
 ---
@@ -9,18 +9,43 @@
 ## Autenticación y uso
 
 - Todas las rutas `/api/v1/*` exigen la cabecera `X-API-Key` con una clave creada
-  en [lexapi.mx/#cuenta](https://lexapi.mx/#cuenta). Cada operación valida su
+  en [lexapi.mx/cuenta](https://lexapi.mx/cuenta). Cada operación valida su
   scope: `norms:read`, `articles:read`, `resolve:run`, `billing:read` y, en los
   planes de la API, `map:read`.
-- Solo se cobran respuestas `2xx`, en créditos por operación
-  ([`CATALOGO.md`](CATALOGO.md)). Un reintento con la misma `Idempotency-Key` y
-  la misma petición no se cobra dos veces.
+- Solo se cobran respuestas `2xx` con resultado, en créditos por operación
+  ([`CATALOGO.md`](CATALOGO.md)): una búsqueda sin artículos responde `200` con
+  `data: []` y la cabecera `X-Normative-Metering: skipped`, sin cargo, igual que
+  un paquete de `POST /resolve` sin items. Un reintento con la misma
+  `Idempotency-Key` y la misma petición no se cobra dos veces.
 - Sin saldo la API responde `402` con `code: insufficient_credits` y el enlace
-  para contratar; sin el scope, `403`; por encima del límite de peticiones por
-  minuto, `429`. Cada respuesta lleva `X-Request-ID` para soporte.
+  para contratar; una operación de los planes de la API (mapa normativo, texto
+  completo de una norma) con una clave del plan gratuito responde `403` con
+  `code: paid_plan_required`, `message` y `upgrade_url`; sin otro scope, `403`
+  con un texto plano; por encima del límite de peticiones, `429` con
+  `Retry-After`. Límites: plan gratuito, 10 peticiones por minuto y 200 por día
+  (UTC) por cuenta, sumando todas sus claves, y hasta 2 claves activas; planes de
+  la API, 120 por minuto por clave en normas y artículos, 60 en `resolve` y `map`,
+  y hasta 10 claves. Los límites vigentes de cada plan los publica la API:
+  `GET /api/v1/checkout/catalog` (campo `limits` de cada plan, sin clave) y
+  `GET /api/v1/account` (`plan.limits`, con la sesión de la cuenta), con
+  `max_active_keys`, `requests_per_minute`, `requests_per_minute_map_resolve`,
+  `requests_per_day` (`null` en los planes de la API), `requests_scope`
+  (`account` o `key`) y `search_results`. Cada respuesta lleva `X-Request-ID`
+  para soporte.
+- Entradas inválidas: en la búsqueda, una `q` vacía o fuera de 2 a 500
+  caracteres responde `422` con `code: invalid_query`; un slug de norma
+  desconocido responde `404` con `code: norm_not_found` y un alias bloqueado,
+  `404` con `code: norm_blocked` y el motivo; un artículo inexistente, o un id
+  que no es UUID, responde `404` con `code: article_not_found`. Todos llevan
+  `message` en `detail` y ninguno se cobra.
 - Cobertura: legislación federal vigente, prospectiva desde el baseline de cada
-  norma. Una fecha anterior devuelve `outside_coverage`; nunca se presenta texto
-  vigente como histórico.
+  norma (la primera fecha de vigencia de sus versiones). Una fecha anterior
+  devuelve `outside_coverage` y nunca se presenta texto vigente como histórico:
+  `GET /articulos/{id}` y `GET /normas/{slug}/estructura` responden `404` con
+  `code: outside_coverage`, `message`, `as_of`, `coverage_start_date` y
+  `norm_slug`; la búsqueda responde `200` con `data: []` y
+  `meta.coverage.status: outside_coverage`, y `POST /resolve`, con
+  `coverage.status: outside_coverage`. Ninguna de esas respuestas se cobra.
 
 ## Operaciones
 
@@ -107,6 +132,9 @@ el scope `resolve:run` y genera el evento `resolution.run`.
         "ambiguity_count": 1
       },
       "text": "...",
+      "full_text": "...",
+      "full_text_checksum": "sha256",
+      "components": [{"node_type": "articulo", "node_version_id": "uuid", "checksum": "sha256"}],
       "source": {"url": "https://...", "is_official": true}
     }
   ],
@@ -120,8 +148,24 @@ el scope `resolve:run` y genera el evento `resolution.run`.
 }
 ```
 
-Fechas previas al baseline devuelven `outside_coverage`; fechas futuras,
-`future_not_available`. No se reconstruye ni pronostica historia normativa.
+Fechas previas al baseline devuelven `outside_coverage` con `coverage_start_date`;
+fechas futuras, `future_not_available`. No se reconstruye ni pronostica historia
+normativa. Un paquete sin items (esos dos casos y `not_found`) no se cobra y
+lleva la cabecera `X-Normative-Metering: skipped`.
+
+Una cita de artículo con norma reconocible (`"Artículo 1500 LFT"`, o `norm` en la
+petición) cuyo artículo no rige en esa fecha responde `not_found` sin items, en
+vez de otros artículos que solo comparten palabras o cifras. `warnings` dice la
+numeración vigente de la norma ("va del artículo 1 al 1010") o, si el artículo
+rige en otra fecha, ese periodo, y remite a `GET /api/v1/normas/{slug}/estructura`.
+La cita reconoce los ordinales (`3o`, `3º` = artículo 3), la letra en mayúscula
+separada por espacio (`69 B` = 69-B) y "constitucional", "Constitución" o "Carta
+Magna" como la CPEUM, salvo que la consulta nombre una ley reglamentaria.
+
+En cada item que es un artículo, `full_text` trae el texto completo, con sus
+fracciones e incisos; `full_text_checksum` es su SHA-256 y `components`, las
+versiones que lo forman, como en la búsqueda. `text` y `version` siguen siendo los
+del nodo del artículo.
 El contrato completo está en [`NORMATIVE_PACKAGE_CONTRACT.md`](NORMATIVE_PACKAGE_CONTRACT.md).
 
 ---
@@ -129,6 +173,19 @@ El contrato completo está en [`NORMATIVE_PACKAGE_CONTRACT.md`](NORMATIVE_PACKAG
 ## `POST /map`
 
 Mapa Normativo. Dado un tema, devuelve las normas aplicables, artículos relevantes, vigencia y fuente.
+Cuesta 2 créditos cuando detecta un tema; si no lo detecta responde `200` con
+`coverage_status: "not_found"`, la cabecera `X-Normative-Metering: skipped` y **no se
+cobra**. `query` admite de 2 a 2,000 caracteres. Requiere un plan de la API: con una clave
+del plan gratuito responde `403` con `code: paid_plan_required` y `upgrade_url`.
+
+La detección compara la consulta con las palabras clave de cada tema del catálogo por
+lexemas en español, sin distinguir acentos, mayúsculas, singular o plural ("liquidaciones"
+encuentra "liquidación"; "marco jurídico" no encuentra "ARCO"). Un tema se detecta cuando
+al menos una de sus palabras clave aparece completa en la consulta; `confidence` crece con
+el número de palabras clave presentes (de 0.62 a 0.98). Si ningún tema se detecta, la
+respuesta `not_found` trae en `suggested_topics` hasta tres temas que comparten alguna
+palabra con la consulta (`confidence` menor que 0.5) y un `warning` que recomienda repetir
+la consulta con las palabras del tema o usar `/articulos/search`.
 
 ### Payload
 
@@ -150,9 +207,10 @@ Mapa Normativo. Dado un tema, devuelve las normas aplicables, artículos relevan
     {
       "slug": "proteccion_datos",
       "name": "Protección de datos personales",
-      "confidence": 0.82
+      "confidence": 0.75
     }
   ],
+  "suggested_topics": [],
   "applicable_norms": [
     {
       "norm": "Constitución Política de los Estados Unidos Mexicanos",
@@ -192,7 +250,7 @@ Mapa Normativo. Dado un tema, devuelve las normas aplicables, artículos relevan
   "coverage": {
     "federal": true,
     "state_specific": false,
-    "requires_regulation": true,
+    "requires_regulation": false,
     "requires_jurisprudence": false,
     "coverage_status": "partial"
   },
@@ -268,7 +326,10 @@ Lista de normas disponibles.
 
 ## `GET /normas/{slug}`
 
-Metadata de una norma.
+Metadata de una norma. Acepta el slug canónico o un alias histórico (`ccomercio`
+→ `ccom`; la respuesta añade `requested_slug` y `canonical_slug`). Un slug
+desconocido responde `404` con `code: norm_not_found`; un alias bloqueado, `404`
+con `code: norm_blocked` y el motivo en `message`.
 
 ### Respuesta
 
@@ -296,14 +357,41 @@ Metadata de una norma.
 
 ## `GET /normas/{slug}/estructura`
 
-Árbol jerárquico de una norma.
+Árbol jerárquico de una norma en la fecha de consulta: los nodos con una versión
+oficial que rige en ella. Un nodo que una corrección retira sale del árbol desde
+ese día y sigue apareciendo en las fechas anteriores. Un slug desconocido o
+bloqueado responde `404` como `GET /normas/{slug}`.
 
 ### Parámetros
 
 | Nombre | Tipo | Descripción |
 |--------|------|-------------|
-| fecha | date | Fecha de consulta (YYYY-MM-DD) |
+| fecha | date | Fecha de consulta (YYYY-MM-DD); hoy si se omite |
 | include_text | boolean | Incluir texto vigente (default false). Requiere un plan de la API (scope `map:read`); el plan gratuito recibe `403` con `code: paid_plan_required` |
+| page | integer | Página de texto cuando `include_text=true` (default 1) |
+| page_size | integer | Nodos con texto por página (default 200, máximo 500) |
+
+Con `include_text=true` el árbol llega completo, pero el texto (`text`,
+`node_version_id`, `valid_from`, `valid_to`) solo acompaña a los nodos de la página
+pedida, en el orden del árbol. `text_page` indica la página, el total de nodos y si
+hay más (`has_more`); cada página es una consulta (1 crédito). Sin `include_text`,
+`text_page` es `null`.
+
+Una `fecha` anterior al baseline de la norma responde `404` con
+`code: outside_coverage`, con o sin `include_text`: el árbol y el texto vigentes
+no se presentan como los de esa fecha. No se cobra.
+
+```json
+{
+  "detail": {
+    "code": "outside_coverage",
+    "message": "La fecha 2020-01-01 es anterior al inicio de la cobertura de la norma 'lft' (2026-07-18): Lex API MX no reconstruye versiones anteriores a la incorporación de cada norma.",
+    "as_of": "2020-01-01",
+    "coverage_start_date": "2026-07-18",
+    "norm_slug": "lft"
+  }
+}
+```
 
 ### Respuesta
 
@@ -311,6 +399,7 @@ Metadata de una norma.
 {
   "norma": "lft",
   "fecha": "2025-01-01",
+  "text_page": {"page": 1, "page_size": 200, "total_nodes": 1842, "has_more": true},
   "estructura": [
     {
       "id": "uuid",
@@ -359,34 +448,110 @@ Excluye normas deprecadas, fuentes no oficiales y datos de prueba.
 
 | Nombre | Tipo | Descripción |
 |--------|------|-------------|
-| q | string | Término de búsqueda |
+| q | string | Término de búsqueda. Obligatorio, de 2 a 500 caracteres; si no, `422` con `code: invalid_query` |
 | materia | string | Filtro por materia |
 | jurisdiccion | string | Filtro por jurisdicción |
-| norma | string | Filtrar por slug de norma |
+| norma | string | Filtrar por slug de norma (o alias histórico). Desconocido o bloqueado: `404` con `code: norm_not_found` o `norm_blocked` |
 | fecha | date | Fecha de vigencia |
-| limit | integer | Máximo de resultados |
+| limit | integer | Resultados por búsqueda (default 10). Máximo 50 en los planes de la API y 10 en el plan gratuito: un valor mayor se recorta, no se rechaza. `meta.limit` dice cuántos se aplicaron |
 
 ### Respuesta
 
+`meta` informa el tope aplicado y el costo: hoy una búsqueda cuesta 1 crédito con
+cualquier `limit`. Sin resultados, `data` llega vacío y la petición no se cobra
+(cabecera `X-Normative-Metering: skipped`).
+
+`meta.coverage` declara la cobertura en `as_of` (la `fecha` pedida o la de hoy) de
+las normas que abarca la búsqueda: la de `norma` o las que dejan `materia` y
+`jurisdiccion`.
+
+- `covered`: todas tienen texto a esa fecha.
+- `partial`: algunas empiezan después; sus slugs van en `norms_outside_coverage`
+  y la búsqueda no las incluye.
+- `outside_coverage`: ninguna tiene texto a esa fecha; `data` llega vacío,
+  `coverage_start_date` dice desde cuándo hay texto y la petición no se cobra.
+
+Cada artículo llega completo: `text` incluye sus fracciones e incisos en el orden
+del documento, con su marcador («I.», «a)»), y `checksum` es el SHA-256 de ese
+texto. `components` lista cada parte (el artículo y sus fracciones, incisos y
+apartados) con su `node_version_id`, el checksum de su versión almacenada y su
+vigencia; `valid_from` y `valid_to` del artículo son la intersección de esas
+vigencias. Un artículo sin fracciones conserva el texto y el checksum de su
+versión.
+
+Cada artículo trae también `canonical_citation` y `citation_status`: `canonical`
+si la cita viene del catálogo de citas, `derived` si se arma con la sigla de la
+norma y el número del artículo, y `ambiguous_legacy` si ese número se repite en
+otro artículo de la misma norma vigente en esa fecha (la cita no identifica uno
+solo).
+
 ```json
 {
+  "meta": {
+    "limit": 10,
+    "max_limit": 50,
+    "credits": 1,
+    "coverage": {"as_of": "2026-10-12", "status": "covered"}
+  },
   "data": [
     {
       "id": "uuid",
-      "norma": "Ley Federal del Trabajo",
-      "norma_slug": "lft",
+      "norm_id": "uuid",
+      "norm": "LFT",
+      "norm_slug": "lft",
+      "node_type": "articulo",
+      "number": "47",
       "label": "Artículo 47",
-      "text": "…",
+      "text": "Son causas de rescisión de la relación de trabajo, sin responsabilidad para el patrón:\nI. Engañarlo el trabajador …\nII. …",
       "node_version_id": "uuid",
-      "valid_from": "1970-04-01",
+      "valid_from": "2026-07-18",
       "valid_to": null,
       "source": "Cámara de Diputados",
       "source_url": "https://...",
       "is_official": true,
-      "checksum": "sha256",
-      "canonical_citation": "Artículo 47 LFT"
+      "checksum": "sha256 del texto completo",
+      "components": [
+        {
+          "node_id": "uuid",
+          "node_type": "articulo",
+          "number": "47",
+          "node_version_id": "uuid",
+          "checksum": "sha256",
+          "valid_from": "2026-07-18",
+          "valid_to": null
+        },
+        {
+          "node_id": "uuid",
+          "node_type": "fraccion",
+          "number": "I",
+          "node_version_id": "uuid",
+          "checksum": "sha256",
+          "valid_from": "2026-07-18",
+          "valid_to": null
+        }
+      ],
+      "canonical_citation": "Artículo 47 LFT",
+      "citation_status": "derived"
     }
   ]
+}
+```
+
+Con una fecha anterior al baseline de las normas buscadas:
+
+```json
+{
+  "meta": {
+    "limit": 10,
+    "max_limit": 50,
+    "credits": 1,
+    "coverage": {
+      "as_of": "2020-01-01",
+      "status": "outside_coverage",
+      "coverage_start_date": "2026-07-18"
+    }
+  },
+  "data": []
 }
 ```
 
@@ -396,27 +561,34 @@ Excluye normas deprecadas, fuentes no oficiales y datos de prueba.
 
 Artículo específico. Acepta `fecha` opcional (`YYYY-MM-DD`); cuando se omite,
 selecciona la versión oficial aplicable a la fecha actual del servidor. Devuelve
-`404` si no existe una versión oficial cubierta para esa fecha.
+`404` con `code: article_not_found` si el id no es un UUID, no existe o no regía
+en esa fecha, y `404` con `code: outside_coverage`, `coverage_start_date` y
+`norm_slug` si la fecha es anterior al baseline de su norma. El texto completo
+(`text`, `checksum`, `components`) y la cita (`canonical_citation`,
+`citation_status`) siguen las reglas de la búsqueda.
 
 ### Respuesta
 
 ```json
 {
   "id": "uuid",
-  "norma": "Ley Federal del Trabajo",
-  "norma_slug": "lft",
+  "norm": "LFT",
+  "norm_slug": "lft",
+  "number": "47",
   "label": "Artículo 47",
-  "text": "…",
+  "text": "Son causas de rescisión de la relación de trabajo, sin responsabilidad para el patrón:\nI. Engañarlo el trabajador …",
   "node_type": "articulo",
-  "path": "/lft/titulo2/capitulo1/articulo47",
-  "valid_from": "1970-04-01",
+  "path": "/lft/titulo/segundo/capitulo/iv/articulo/47",
+  "valid_from": "2026-07-18",
   "valid_to": null,
-  "as_of": "2026-07-16",
+  "as_of": "2026-10-12",
   "source": "Cámara de Diputados",
   "source_url": "https://...",
   "is_official": true,
-  "checksum": "sha256",
+  "checksum": "sha256 del texto completo",
+  "components": [{"node_type": "articulo", "node_version_id": "uuid", "checksum": "sha256"}],
   "canonical_citation": "Artículo 47 LFT",
+  "citation_status": "derived",
   "historial_url": "/api/v1/articulos/{id}/historial"
 }
 ```
@@ -431,7 +603,9 @@ la norma. Si la fecha solicitada queda fuera de cobertura, la API debe declarar
 la limitación y no presentar el texto vigente como histórico.
 
 Sólo devuelve versiones con procedencia de ingesta oficial, fuente oficial y
-norma activa; no mezcla seeds manuales, mocks ni versiones de prueba.
+norma activa; no mezcla seeds manuales, mocks ni versiones de prueba. Un id que
+no es UUID o un artículo sin versiones oficiales responde `404` con
+`code: article_not_found`.
 
 ### Respuesta
 

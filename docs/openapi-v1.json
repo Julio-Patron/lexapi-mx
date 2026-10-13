@@ -497,6 +497,7 @@
           "jurisdiction": {
             "anyOf": [
               {
+                "maxLength": 80,
                 "type": "string"
               },
               {
@@ -511,6 +512,8 @@
             "type": "string"
           },
           "query": {
+            "maxLength": 2000,
+            "minLength": 2,
             "title": "Query",
             "type": "string"
           }
@@ -568,6 +571,14 @@
           "query": {
             "title": "Query",
             "type": "string"
+          },
+          "suggested_topics": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DetectedTopic"
+            },
+            "title": "Suggested Topics",
+            "type": "array"
           },
           "traceability": {
             "default": [],
@@ -784,6 +795,42 @@
         "properties": {
           "citation": {
             "$ref": "#/components/schemas/CitationReference"
+          },
+          "components": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TextComponent"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Components"
+          },
+          "full_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Text"
+          },
+          "full_text_checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Text Checksum"
           },
           "match_reasons": {
             "items": {
@@ -1124,6 +1171,82 @@
           }
         },
         "title": "SourceReference",
+        "type": "object"
+      },
+      "TextComponent": {
+        "description": "Un nodo del artículo compuesto (el propio artículo, una fracción o un inciso).",
+        "properties": {
+          "checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checksum"
+          },
+          "node_id": {
+            "title": "Node Id",
+            "type": "string"
+          },
+          "node_type": {
+            "title": "Node Type",
+            "type": "string"
+          },
+          "node_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Version Id"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid From"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "required": [
+          "node_id",
+          "node_type"
+        ],
+        "title": "TextComponent",
         "type": "object"
       },
       "TraceabilityItem": {
@@ -1894,6 +2017,7 @@
     },
     "/api/v1/articulos/search": {
       "get": {
+        "description": "Búsqueda full-text de artículos con el texto que rige en `fecha` (hoy si se omite).\n\n`text` es el artículo completo, con sus fracciones e incisos; `checksum` es su SHA-256\ny `components` lista el nodo y la versión de cada parte. `meta.coverage` declara la\ncobertura de las normas buscadas en esa fecha: `covered`, `partial` (las de\n`norms_outside_coverage` aún no tenían cobertura) u `outside_coverage` (`data` vacío,\n`coverage_start_date`, sin cobro). Cada artículo trae `canonical_citation` y\n`citation_status` (`canonical`, `derived` o `ambiguous_legacy`).",
         "operationId": "search_articulos",
         "parameters": [
           {
@@ -1976,8 +2100,8 @@
             "name": "limit",
             "required": false,
             "schema": {
-              "default": 20,
-              "maximum": 100,
+              "default": 10,
+              "maximum": 50,
               "minimum": 1,
               "title": "Limit",
               "type": "integer"
@@ -2017,6 +2141,7 @@
     },
     "/api/v1/articulos/{id}": {
       "get": {
+        "description": "Un artículo completo (fracciones e incisos incluidos) con el texto que rige en `fecha`\n(hoy si se omite), su fuente, el SHA-256 del texto, su vigencia, `components` con la\nversión de cada parte y su cita (`canonical_citation`, `citation_status`). Una `fecha`\nanterior al baseline de su norma responde `404 outside_coverage`.",
         "operationId": "get_articulo",
         "parameters": [
           {
@@ -2254,7 +2379,7 @@
     },
     "/api/v1/checkout/catalog": {
       "get": {
-        "description": "Planes y recargas a la venta. Montos en centavos MXN con IVA incluido.",
+        "description": "Planes y recargas a la venta. Montos en centavos MXN con IVA incluido.\n\nCada plan trae `limits` (claves, peticiones y resultados por búsqueda) para que la\nweb y los integradores lean las cifras de la API en vez de copiarlas.",
         "operationId": "get_catalog",
         "responses": {
           "200": {
@@ -2456,7 +2581,7 @@
     },
     "/api/v1/normas/{slug}/estructura": {
       "get": {
-        "description": "Árbol de la norma. `include_text=true` agrega el texto vigente de cada nodo y\nrequiere un plan de la API (`403 paid_plan_required` en el plan gratuito).",
+        "description": "Árbol de la norma en `fecha` (hoy si se omite): los nodos con una versión oficial\nque rige en esa fecha. `include_text=true` agrega el texto de una página de nodos\n(`page`, `page_size`; el árbol llega completo y `text_page` dice si hay más) y\nrequiere un plan de la API (`403 paid_plan_required` en el plan gratuito). Una `fecha`\nanterior al baseline de la norma responde `404 outside_coverage`.",
         "operationId": "get_estructura",
         "parameters": [
           {
@@ -2493,6 +2618,29 @@
               "default": false,
               "title": "Include Text",
               "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
             }
           }
         ],

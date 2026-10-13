@@ -1,6 +1,6 @@
 [project]
 name = "lex-api-mx-client"
-version = "0.1.2"
+version = "0.3.0"
 description = "Cliente Python de Lex API MX: legislación federal mexicana vigente con fuente, checksum y vigencia"
 readme = "README.md"
 license = "MIT"

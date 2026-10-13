@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from datetime import date
 from typing import Any
 from urllib.parse import quote
@@ -14,17 +15,34 @@ class LexApiError(RuntimeError):
         message: str,
         request_id: str | None = None,
         body: Any = None,
+        retry_after: float | None = None,
     ):
         self.status_code = status_code
         self.request_id = request_id
         self.detail = message
         self.body = body
+        self.retry_after = retry_after
         suffix = f" request_id={request_id}" if request_id else ""
         super().__init__(f"Lex API MX returned {status_code}: {message}{suffix}")
 
 
+def _retry_after_seconds(response: httpx.Response) -> float | None:
+    """Segundos de `Retry-After`; la API los envía en cada 429 (no usa fechas HTTP)."""
+    try:
+        seconds = float(response.headers.get("Retry-After", ""))
+    except ValueError:
+        return None
+    return seconds if seconds >= 0 else None
+
+
 class LexApiClient:
-    """Synchronous client for the stable Lex API MX integration surface."""
+    """Synchronous client for the stable Lex API MX integration surface.
+
+    Un 429 con `Retry-After` de hasta `max_retry_wait` segundos se reintenta solo, hasta
+    `max_retries` veces: la API rechaza la petición antes de procesarla y no la cobra. Una
+    espera mayor (el límite diario del plan gratuito) se lanza enseguida como `LexApiError`
+    con `retry_after`.
+    """
 
     def __init__(
         self,
@@ -34,11 +52,17 @@ class LexApiClient:
         timeout: float = 30.0,
         transport: httpx.BaseTransport | None = None,
         user_agent: str | None = None,
+        max_retries: int = 2,
+        max_retry_wait: float = 30.0,
     ) -> None:
         if not base_url.strip():
             raise ValueError("base_url is required")
         if not api_key.strip():
             raise ValueError("api_key is required")
+        if max_retries < 0:
+            raise ValueError("max_retries must be >= 0")
+        self._max_retries = max_retries
+        self._max_retry_wait = max_retry_wait
         if user_agent is None:
             from . import __version__  # importación tardía: el paquete importa este módulo
 
@@ -140,12 +164,19 @@ class LexApiClient:
         *,
         as_of: date | str | None = None,
         include_text: bool = False,
+        page: int = 1,
+        page_size: int | None = None,
     ) -> dict[str, Any]:
-        """Árbol de la norma; `include_text=True` agrega el texto de cada nodo y
-        requiere un plan de la API (403 en el plan gratuito)."""
+        """Árbol de la norma; `include_text=True` agrega el texto de una página de nodos
+        (`page`, `page_size`; la respuesta trae `text_page.has_more`) y requiere un plan
+        de la API (403 en el plan gratuito)."""
         if not norm.strip():
             raise ValueError("norm is required")
         params: dict[str, Any] = {"include_text": str(include_text).lower()}
+        if include_text:
+            params["page"] = page
+            if page_size is not None:
+                params["page_size"] = page_size
         if as_of is not None:
             params["fecha"] = as_of.isoformat() if isinstance(as_of, date) else as_of
         return self._request(
@@ -164,12 +195,28 @@ class LexApiClient:
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         headers = {"Idempotency-Key": idempotency_key} if idempotency_key else None
-        response = self._client.request(method, path, json=json, params=params, headers=headers)
+        retries = 0
+        while True:
+            response = self._client.request(method, path, json=json, params=params, headers=headers)
+            retry_after = _retry_after_seconds(response) if response.status_code == 429 else None
+            if (
+                retry_after is None
+                or retries >= self._max_retries
+                or retry_after > self._max_retry_wait
+            ):
+                break
+            retries += 1
+            time.sleep(retry_after)
         if response.is_error:
             body: Any = None
             try:
                 body = response.json()
-                message = str(body.get("detail", body)) if isinstance(body, dict) else str(body)
+                detail = body.get("detail", body) if isinstance(body, dict) else body
+                # Los 402 y 403 de plan traen {"code", "message", "upgrade_url"}.
+                if isinstance(detail, dict) and detail.get("message"):
+                    message = str(detail["message"])
+                else:
+                    message = str(detail)
             except ValueError:
                 message = response.text or response.reason_phrase
             raise LexApiError(
@@ -177,6 +224,7 @@ class LexApiClient:
                 message,
                 response.headers.get("X-Request-ID"),
                 body,
+                retry_after,
             )
         try:
             value = response.json()
