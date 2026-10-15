@@ -43,6 +43,12 @@ Una cita `derived` es reproducible pero todavía no está acreditada en
 selección jurídica exhaustiva. El resolvedor conserva el primer nodo por orden
 oficial, omite duplicados humanos y emite advertencia.
 
+Un artículo transitorio (`"Artículo 2 transitorio LFT"`) resuelve al nodo
+`transitorio` de su norma. Cada sección de transitorios numera los suyos (la de la
+ley y la del decreto que la expide): si el número se repite, van todos los nodos
+en el orden del documento, cada uno `ambiguous_legacy` con su `ambiguity_count`,
+y `warnings` lo explica.
+
 Los números compuestos (`1390 Bis 1`, `195-Z-40`, `58-14`) se conservan tal
 cual en las citas.
 

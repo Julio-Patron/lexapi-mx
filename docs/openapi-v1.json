@@ -382,6 +382,7 @@
         "type": "object"
       },
       "MapArticle": {
+        "description": "Artículo de referencia del mapa, completo: `text` con sus fracciones e incisos,\n`checksum` su SHA-256 y `components` la versión de cada parte.",
         "properties": {
           "checksum": {
             "anyOf": [
@@ -393,6 +394,20 @@
               }
             ],
             "title": "Checksum"
+          },
+          "components": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TextComponent"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Components"
           },
           "id": {
             "title": "Id",
@@ -2581,7 +2596,7 @@
     },
     "/api/v1/normas/{slug}/estructura": {
       "get": {
-        "description": "Árbol de la norma en `fecha` (hoy si se omite): los nodos con una versión oficial\nque rige en esa fecha. `include_text=true` agrega el texto de una página de nodos\n(`page`, `page_size`; el árbol llega completo y `text_page` dice si hay más) y\nrequiere un plan de la API (`403 paid_plan_required` en el plan gratuito). Una `fecha`\nanterior al baseline de la norma responde `404 outside_coverage`.",
+        "description": "Árbol de la norma en `fecha` (hoy si se omite): los nodos con una versión oficial\nque rige en esa fecha. `include_text=true` agrega el texto de una página de nodos en\nel orden del documento (`page`, `page_size`; el árbol llega completo y `text_page`\ndice si hay más), cada uno con su vigencia, su fuente y el SHA-256 de su texto\n(`checksum`), y requiere un plan de la API (`403 paid_plan_required` en el plan\ngratuito). Los nodos con texto tienen un tope diario por cuenta\n(`text_nodes_per_day` en `GET /account`; `429 text_quota_exceeded` al rebasarlo). Una\n`fecha` anterior al baseline de la norma responde `404 outside_coverage`.",
         "operationId": "get_estructura",
         "parameters": [
           {

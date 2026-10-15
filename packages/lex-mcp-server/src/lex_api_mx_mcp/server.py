@@ -91,8 +91,11 @@ TEXT_FIELDS = (
     "path",
     "node_version_id",
     "text",
+    "checksum",
     "valid_from",
     "valid_to",
+    "source",
+    "source_url",
 )
 
 
@@ -361,8 +364,8 @@ def build_server(client: LexApiClient) -> MCPServer:
         artículo y el número de nodos por tipo; en `indice`, cada división tiene su
         `etiqueta` y su `contenido` en orden, donde cada texto suelto es el número de un
         artículo. Las fracciones e incisos se cuentan pero no se listan. Con
-        include_text=True, `textos` trae los nodos de la página pedida con su texto y su
-        vigencia.
+        include_text=True, `textos` trae los nodos de la página pedida, en el orden del
+        documento, con su texto, su vigencia, su fuente y su checksum.
         """
         return fit_context(
             compact_structure(
@@ -384,9 +387,9 @@ def build_server(client: LexApiClient) -> MCPServer:
                 min_length=2,
                 max_length=2000,
                 description=(
-                    "Cita o situación a resolver, ej. 'Artículo 47 LFT', 'art. 27 CFF' o "
-                    "'causas de rescisión de la relación de trabajo sin responsabilidad del "
-                    "patrón'."
+                    "Cita o situación a resolver, ej. 'Artículo 47 LFT', 'art. 27 CFF', "
+                    "'Artículo 2 transitorio LFT' o 'causas de rescisión de la relación de "
+                    "trabajo sin responsabilidad del patrón'."
                 ),
             ),
         ],

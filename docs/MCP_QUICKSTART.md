@@ -71,9 +71,9 @@ y el checksum del texto.
 
 | Herramienta | Parámetros obligatorios | Devuelve |
 |---|---|---|
-| `resolve_legal_citation` | `query`, `fecha`, `jurisdiccion` | Paquete normativo v1: normas, nodos, citas, cobertura, fuente y checksum; en cada artículo, `full_text` con sus fracciones e incisos. |
+| `resolve_legal_citation` | `query`, `fecha`, `jurisdiccion` | Paquete normativo v1: normas, nodos, citas, cobertura, fuente y checksum; en cada artículo o transitorio ("Artículo 2 transitorio LFT"), `full_text` con sus fracciones e incisos. |
 | `search_mexican_law` | `query`, `fecha`, `jurisdiccion` | Artículos vigentes completos (con sus fracciones e incisos), con cita, vigencia, fuente y checksum. |
-| `get_norm_structure` | `norma`, `fecha` | Índice de la norma: `resumen` con el primer y el último artículo y los nodos por tipo; `indice` con libros, títulos y capítulos en orden y los números de sus artículos (las fracciones e incisos se cuentan, no se listan). `include_text=true` agrega en `textos` el texto de una página de 200 nodos (`page`; revisa `text_page.has_more`) y requiere un plan de la API. |
+| `get_norm_structure` | `norma`, `fecha` | Índice de la norma: `resumen` con el primer y el último artículo y los nodos por tipo; `indice` con libros, títulos y capítulos en orden y los números de sus artículos (las fracciones e incisos se cuentan, no se listan). `include_text=true` agrega en `textos` una página de 200 nodos en el orden del documento, cada uno con su texto, vigencia, fuente y checksum (`page`; revisa `text_page.has_more`), y requiere un plan de la API. |
 
 - `fecha` acepta `"vigente"` (fecha actual en la Ciudad de México) o
   `YYYY-MM-DD`. Una fecha anterior al inicio de cobertura devuelve

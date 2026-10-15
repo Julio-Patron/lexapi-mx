@@ -162,8 +162,19 @@ La cita reconoce los ordinales (`3o`, `3º` = artículo 3), la letra en mayúscu
 separada por espacio (`69 B` = 69-B) y "constitucional", "Constitución" o "Carta
 Magna" como la CPEUM, salvo que la consulta nombre una ley reglamentaria.
 
-En cada item que es un artículo, `full_text` trae el texto completo, con sus
-fracciones e incisos; `full_text_checksum` es su SHA-256 y `components`, las
+Un artículo transitorio se cita con su norma: `"Artículo 2 transitorio LFT"`,
+`"artículo segundo transitorio de la Ley de Amparo"`, `"Disposición Primera
+Transitoria LISF"` o `"transitorio único"` con `norm`. El item es el nodo
+`transitorio`, no el artículo con ese número; sin norma reconocible responde
+`not_found` y pide indicarla. Cada sección de transitorios numera los suyos (la
+de la ley y la del decreto que la expide), así que un número puede salir más de
+una vez: van todos, en el orden del documento, con `citation.status`
+`ambiguous_legacy`, `ambiguity_count` y un aviso en `warnings`. Una cita en
+femenino ("Primera") se queda con la sección que numera así. Si el transitorio
+no existe, `warnings` dice cuáles tiene la norma ("sus transitorios son 1 a 13").
+
+En cada item que es un artículo o un transitorio, `full_text` trae el texto
+completo, con sus fracciones e incisos; `full_text_checksum` es su SHA-256 y `components`, las
 versiones que lo forman, como en la búsqueda. `text` y `version` siguen siendo los
 del nodo del artículo.
 El contrato completo está en [`NORMATIVE_PACKAGE_CONTRACT.md`](NORMATIVE_PACKAGE_CONTRACT.md).
@@ -276,15 +287,19 @@ la consulta con las palabras del tema o usar `/articulos/search`.
       "valid_to": null,
       "source": "Cámara de Diputados",
       "source_url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LFPDPPP.pdf",
-      "checksum": "sha256 del texto, 64 caracteres hexadecimales"
+      "checksum": "sha256 del texto completo, 64 caracteres hexadecimales",
+      "components": [{"node_type": "articulo", "node_version_id": "uuid", "checksum": "sha256"}]
     }
   ]
 }
 ```
 
 `articles` trae el texto vigente de cada artículo de referencia que sí está en la base, con su
-fuente, su checksum y su vigencia. `source`, `source_url` y `checksum` llegan en `null` si la
-versión no los tiene; nunca se rellenan con un valor supuesto.
+fuente, su checksum y su vigencia. Cada artículo llega completo, como en la búsqueda: `text`
+incluye sus fracciones e incisos, `checksum` es el SHA-256 de ese texto y `components` lista
+cada parte con su versión (`node_version_id` sigue siendo la del artículo). `source`,
+`source_url` y `checksum` llegan en `null` si la versión no los tiene; nunca se rellenan con
+un valor supuesto.
 
 ---
 
@@ -371,11 +386,20 @@ bloqueado responde `404` como `GET /normas/{slug}`.
 | page | integer | Página de texto cuando `include_text=true` (default 1) |
 | page_size | integer | Nodos con texto por página (default 200, máximo 500) |
 
-Con `include_text=true` el árbol llega completo, pero el texto (`text`,
-`node_version_id`, `valid_from`, `valid_to`) solo acompaña a los nodos de la página
-pedida, en el orden del árbol. `text_page` indica la página, el total de nodos y si
-hay más (`has_more`); cada página es una consulta (1 crédito). Sin `include_text`,
-`text_page` es `null`.
+Con `include_text=true` el árbol llega completo, pero el texto solo acompaña a los
+nodos de la página pedida, en el orden del documento (cada nodo antes que sus
+hijos). Cada nodo con texto trae `text`, `node_version_id`, su vigencia
+(`valid_from`, `valid_to`), su fuente (`source`, `source_url`, `is_official`) y
+`checksum`, el SHA-256 de ese `text`. `text_page` indica la página, el total de
+nodos y si hay más (`has_more`); cada página es una consulta (1 crédito). Sin
+`include_text`, `text_page` es `null`.
+
+Los nodos con texto tienen un tope diario por cuenta (día UTC), publicado como
+`text_nodes_per_day` en `GET /api/v1/account` y en `GET /api/v1/checkout/catalog`.
+Al rebasarlo la página responde `429` con `code: text_quota_exceeded`, `limit` y
+`Retry-After` (segundos hasta el siguiente día UTC); no se cobra ni se entrega
+texto. Para leer artículos concretos, la búsqueda y `GET /articulos/{id}` no
+cuentan contra ese tope.
 
 Una `fecha` anterior al baseline de la norma responde `404` con
 `code: outside_coverage`, con o sin `include_text`: el árbol y el texto vigentes
@@ -420,6 +444,12 @@ no se presentan como los de esa fecha. No se cobra.
               "label": "Artículo 47",
               "node_version_id": "uuid",
               "text": "…",
+              "checksum": "sha256",
+              "valid_from": "2026-07-18",
+              "valid_to": null,
+              "source": "Cámara de Diputados",
+              "source_url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LFT.pdf",
+              "is_official": true,
               "children": [
                 {
                   "node_type": "fraccion",

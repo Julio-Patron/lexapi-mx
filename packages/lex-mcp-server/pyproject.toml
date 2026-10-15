@@ -1,6 +1,6 @@
 [project]
 name = "lex-api-mx-mcp"
-version = "0.3.0"
+version = "0.3.1"
 description = "Servidor MCP de Lex API MX: legislación mexicana vigente y verificable para agentes de IA"
 readme = "README.md"
 license = "MIT"
@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "lex-api-mx-client>=0.3.0,<0.4",
+    "lex-api-mx-client>=0.3.1,<0.4",
     "mcp>=2.2,<3",
 ]
 
