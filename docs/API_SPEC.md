@@ -55,6 +55,7 @@
   ([contrato](NORMATIVE_PACKAGE_CONTRACT.md))
 - `POST /map` — mapa normativo (planes de la API)
 - `GET /billing/plans`, `GET /billing/summary`, `GET /billing/ledger`
+- `GET /corpus/status` — cifras del corpus y última revisión de las fuentes (sin clave ni cobro)
 
 ## Consumo
 
@@ -300,6 +301,38 @@ incluye sus fracciones e incisos, `checksum` es el SHA-256 de ese texto y `compo
 cada parte con su versión (`node_version_id` sigue siendo la del artículo). `source`,
 `source_url` y `checksum` llegan en `null` si la versión no los tiene; nunca se rellenan con
 un valor supuesto.
+
+---
+
+## `GET /corpus/status`
+
+Estado del corpus. No pide clave ni descuenta créditos; la respuesta se calcula como
+mucho cada diez minutos y lleva `Cache-Control: public, max-age=300`.
+
+### Respuesta
+
+```json
+{
+  "as_of": "2026-10-16",
+  "norms": 123,
+  "articles": 29511,
+  "provisions": 78479,
+  "latest_version_from": "2026-10-15",
+  "monitor": {
+    "cadence": "daily",
+    "last_checked_at": "2026-10-16T13:02:11+00:00",
+    "targets": 123,
+    "pending_changes": 0
+  },
+  "computed_at": "2026-10-16T14:00:00+00:00"
+}
+```
+
+`norms`, `articles` y `provisions` son los ordenamientos, artículos y disposiciones con
+texto oficial vigente en `as_of` (las cifras que publica la web). `latest_version_from`
+es la vigencia más reciente entre las versiones oficiales (una reforma o una corrección
+de extracción). `monitor` dice cuándo se revisaron por última vez los documentos
+oficiales, cuántos se vigilan y cuántos cambios esperan revisión jurídica.
 
 ---
 

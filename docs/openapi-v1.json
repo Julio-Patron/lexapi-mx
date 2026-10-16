@@ -1414,7 +1414,7 @@
   "info": {
     "description": "API mexicana de consulta normativa estructurada",
     "title": "Lex API MX",
-    "version": "0.1.0"
+    "version": "0.3.1"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -2409,6 +2409,26 @@
         "summary": "Get Catalog",
         "tags": [
           "billing"
+        ]
+      }
+    },
+    "/api/v1/corpus/status": {
+      "get": {
+        "description": "Cifras vigentes del corpus y última revisión de las fuentes. Sin clave ni cobro.\n\n`norms`, `articles` y `provisions` son los ordenamientos, artículos y disposiciones\ncon texto oficial vigente en `as_of` (las mismas cifras que publica la web).\n`latest_version_from` es la vigencia más reciente entre las versiones oficiales\n(reformas o correcciones). `monitor` dice cuándo se revisaron por última vez los\ndocumentos oficiales, cuántos se vigilan y cuántos cambios esperan revisión\njurídica. La respuesta se calcula como mucho cada diez minutos.",
+        "operationId": "get_corpus_status",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Corpus Status",
+        "tags": [
+          "corpus"
         ]
       }
     },

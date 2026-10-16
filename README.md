@@ -25,8 +25,8 @@ fuente, checksum y vigencia, y tu sistema decide qué hacer con ellos.
 | | |
 |---|---|
 | Ordenamientos federales | **123**: Constitución, 9 códigos, 69 leyes y 44 reglamentos |
-| Artículos vigentes | **29,547** |
-| Disposiciones (artículos, fracciones, incisos, capítulos…) | **77,558** |
+| Artículos vigentes | **29,511** |
+| Disposiciones vigentes (artículos, fracciones, incisos, capítulos…) | **78,479** |
 | Fuente oficial y checksum por disposición | 100 % |
 | Fuentes | Cámara de Diputados, Diario Oficial de la Federación, STPS y TJA CDMX |
 
