@@ -27,8 +27,8 @@ curl -X POST "$LEX_API_BASE_URL/api/v1/resolve" \
 ```
 
 La respuesta incluye `contract_version`, cobertura temporal, citas, fuente y
-checksum. Una fecha anterior al baseline devuelve `outside_coverage`; no se
-reconstruye historia general.
+checksum. Una fecha anterior al baseline devuelve `outside_coverage` y una futura,
+`future_not_available`; no se reconstruye ni se pronostica historia.
 
 ## SDK Python
 

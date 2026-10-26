@@ -2032,7 +2032,7 @@
     },
     "/api/v1/articulos/search": {
       "get": {
-        "description": "Búsqueda full-text de artículos con el texto que rige en `fecha` (hoy si se omite).\n\n`text` es el artículo completo, con sus fracciones e incisos; `checksum` es su SHA-256\ny `components` lista el nodo y la versión de cada parte. `meta.coverage` declara la\ncobertura de las normas buscadas en esa fecha: `covered`, `partial` (las de\n`norms_outside_coverage` aún no tenían cobertura) u `outside_coverage` (`data` vacío,\n`coverage_start_date`, sin cobro). Cada artículo trae `canonical_citation` y\n`citation_status` (`canonical`, `derived` o `ambiguous_legacy`).",
+        "description": "Búsqueda full-text de artículos con el texto que rige en `fecha` (hoy si se omite).\n\nBusca también en fracciones, incisos y apartados sin distinguir acentos. Devuelve\ncada artículo una sola vez, con coincidencias de todos los términos por disposición\nantes del respaldo OR. Las frases entre comillas, OR y exclusiones con - conservan\nsus operadores por disposición y no se amplían.\n\n`text` es el artículo completo, con sus fracciones e incisos; `checksum` es su SHA-256\ny `components` lista el nodo y la versión de cada parte. `meta.coverage` declara la\ncobertura de las normas buscadas en esa fecha: `covered`, `partial` (las de\n`norms_outside_coverage` aún no tenían cobertura) u `outside_coverage` (`data` vacío,\n`coverage_start_date`, sin cobro) o `future_not_available` (`fecha` más allá de mañana:\nno se pronostican reformas; `data` vacío, sin cobro). Cada artículo trae\n`canonical_citation` y `citation_status` (`canonical`, `derived` o `ambiguous_legacy`).",
         "operationId": "search_articulos",
         "parameters": [
           {
@@ -2156,7 +2156,7 @@
     },
     "/api/v1/articulos/{id}": {
       "get": {
-        "description": "Un artículo completo (fracciones e incisos incluidos) con el texto que rige en `fecha`\n(hoy si se omite), su fuente, el SHA-256 del texto, su vigencia, `components` con la\nversión de cada parte y su cita (`canonical_citation`, `citation_status`). Una `fecha`\nanterior al baseline de su norma responde `404 outside_coverage`.",
+        "description": "Un artículo completo (fracciones e incisos incluidos) con el texto que rige en `fecha`\n(hoy si se omite), su fuente, el SHA-256 del texto, su vigencia, `components` con la\nversión de cada parte y su cita (`canonical_citation`, `citation_status`). Una `fecha`\nanterior al baseline de su norma responde `404 outside_coverage`; una futura (más allá\nde mañana), `404 future_not_available`.",
         "operationId": "get_articulo",
         "parameters": [
           {
@@ -2616,7 +2616,7 @@
     },
     "/api/v1/normas/{slug}/estructura": {
       "get": {
-        "description": "Árbol de la norma en `fecha` (hoy si se omite): los nodos con una versión oficial\nque rige en esa fecha. `include_text=true` agrega el texto de una página de nodos en\nel orden del documento (`page`, `page_size`; el árbol llega completo y `text_page`\ndice si hay más), cada uno con su vigencia, su fuente y el SHA-256 de su texto\n(`checksum`), y requiere un plan de la API (`403 paid_plan_required` en el plan\ngratuito). Los nodos con texto tienen un tope diario por cuenta\n(`text_nodes_per_day` en `GET /account`; `429 text_quota_exceeded` al rebasarlo). Una\n`fecha` anterior al baseline de la norma responde `404 outside_coverage`.",
+        "description": "Árbol de la norma en `fecha` (hoy si se omite): los nodos con una versión oficial\nque rige en esa fecha. `include_text=true` agrega el texto de una página de nodos en\nel orden del documento (`page`, `page_size`; el árbol llega completo y `text_page`\ndice si hay más), cada uno con su vigencia, su fuente y el SHA-256 de su texto\n(`checksum`), y requiere un plan de la API (`403 paid_plan_required` en el plan\ngratuito). Los nodos con texto tienen un tope diario por cuenta\n(`text_nodes_per_day` en `GET /account`; `429 text_quota_exceeded` al rebasarlo). Una\n`fecha` anterior al baseline de la norma responde `404 outside_coverage`; una futura\n(más allá de mañana), `404 future_not_available`.",
         "operationId": "get_estructura",
         "parameters": [
           {

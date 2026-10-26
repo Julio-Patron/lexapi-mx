@@ -44,7 +44,8 @@ fuente oficial, el checksum SHA-256 y la vigencia de cada texto. Reglas de uso:
    checksum que devuelva la herramienta; no inventes artículos ni fracciones.
 4. Si la respuesta dice `not_found` o no trae resultados, dilo explícitamente. Si
    dice `outside_coverage`, explica que no hay texto anterior a
-   `coverage_start_date`; nunca presentes el texto vigente como histórico.
+   `coverage_start_date`; si dice `future_not_available`, que no se pronostican
+   reformas; nunca presentes el texto vigente como histórico ni como futuro.
 5. Usa `fecha="vigente"` salvo que el usuario pregunte por un momento concreto. El
    texto devuelto es el que regía en esa fecha (`valid_from` a `valid_to`): si los
    hechos del caso ocurrieron en otra fecha, consulta también esa fecha y dilo.
@@ -175,6 +176,11 @@ def describe_api_error(error: LexApiError) -> str:
                 f"{message} Vuelve a llamar con una fecha igual o posterior a {start} o con "
                 "fecha='vigente', y aclara al usuario que no hay texto anterior a esa fecha."
             )
+        if code == "future_not_available":
+            return (
+                f"{message} Vuelve a llamar con fecha='vigente' y aclara al usuario que "
+                "Lex API MX no pronostica reformas: el texto que recibirá es el vigente hoy."
+            )
         if code in ("norm_not_found", "norm_blocked") or not code:
             return f"{message} {NORM_HINT}"
     if error.status_code == 409:
@@ -294,8 +300,10 @@ def build_server(client: LexApiClient) -> MCPServer:
                 max_length=500,
                 description=(
                     "De 2 a 5 términos jurídicos en español (ej. 'aguinaldo', 'rescisión "
-                    "patrón'). Todos deben aparecer en el artículo; admite OR entre "
-                    "términos y frases entre comillas."
+                    "patrón'). Prioriza todos los términos en una disposición y después "
+                    "añade coincidencias parciales mediante OR. Busca también en fracciones, "
+                    "incisos y apartados, sin distinguir acentos. Las frases entre comillas, "
+                    "OR explícito y exclusiones con - conservan sus operadores y no se amplían."
                 ),
             ),
         ],
@@ -313,11 +321,14 @@ def build_server(client: LexApiClient) -> MCPServer:
         Úsala cuando necesites el fundamento legal de un tema y no conozcas el artículo
         exacto; si ya tienes la cita (norma y número), usa resolve_legal_citation. La
         búsqueda es por términos, no semántica: escribe palabras clave, no una pregunta
-        completa. Cada resultado es el artículo completo (fracciones e incisos) con su
+        completa. Prioriza coincidencias de todos los términos en una disposición; después
+        incluye coincidencias parciales mediante OR. Busca en el artículo y sus fracciones,
+        incisos y apartados, sin distinguir acentos. Las frases entre comillas, OR explícito
+        y exclusiones con - no se amplían. Cada resultado es el artículo completo con su
         cita canónica, su vigencia (`valid_from`, `valid_to`), el URL de la fuente
         oficial y el checksum SHA-256. Si `data` llega vacío, revisa
-        `meta.coverage.status` y reformula con sinónimos jurídicos o con OR antes de
-        concluir que no hay fundamento.
+        `meta.coverage.status` y reformula con sinónimos jurídicos antes de concluir
+        que no hay fundamento.
         """
         return fit_context(
             call(
