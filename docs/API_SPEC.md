@@ -704,6 +704,22 @@ norma activa; no mezcla seeds manuales, mocks ni versiones de prueba. Un id que
 no es UUID o un artículo sin versiones oficiales responde `404` con
 `code: article_not_found`.
 
+Cada fila compone el artículo completo con sus fracciones e incisos en el corte
+`observed_at`; incluye `components` y el SHA-256 del texto servido. Un cambio en
+una fracción también abre un corte del historial, aunque el encabezado del
+artículo permanezca igual. `valid_from` y `valid_to` delimitan ese texto compuesto.
+
+`reform_annotations` extrae las anotaciones explícitas «Artículo/Párrafo/Fracción
+reformado, adicionado o derogado DOF dd-mm-aaaa» del texto conservado. Cada entrada
+incluye la fecha de publicación y la línea literal, para mantener su alcance.
+Son metadatos documentales disponibles desde el baseline: una anotación de 2020
+en un texto incorporado en 2026 no incorpora ni reconstruye el texto de 2020.
+No se infieren vigencia, título ni URL del decreto a partir de esas anotaciones.
+Los campos `reform_publication_date`, `reform_effective_date`, `decree_title` y
+`dof_url` corresponden exclusivamente a reformas registradas y siguen en `null`
+cuando no existe ese registro. El historial también contiene correcciones de
+extracción, que no son reformas legislativas.
+
 ### Respuesta
 
 ```json
@@ -712,13 +728,21 @@ no es UUID o un artículo sin versiones oficiales responde `404` con
     {
       "node_version_id": "uuid",
       "text": "…",
-      "valid_from": "2023-01-01",
+      "observed_at": "2026-10-12",
+      "valid_from": "2026-10-12",
       "valid_to": null,
-      "reform": {
-        "date": "2023-01-01",
-        "decree_title": "Decreto por el que se reforma…",
-        "dof_url": "https://…"
-      }
+      "checksum": "sha256-del-texto-servido",
+      "source": "Cámara de Diputados",
+      "source_url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/CCF.pdf",
+      "is_official": true,
+      "components": [],
+      "reform_publication_date": null,
+      "reform_effective_date": null,
+      "decree_title": null,
+      "dof_url": null,
+      "reform_annotations": [
+        {"publication_date": "2020-01-01", "annotation": "Artículo reformado DOF 01-01-2020"}
+      ]
     }
   ]
 }

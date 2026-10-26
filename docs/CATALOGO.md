@@ -1,19 +1,19 @@
 # Catálogo de Lex API MX
 
-Corte: **2026-10-25**. Las cifras corresponden a esa fecha; el estado vigente hoy se consulta en `GET /api/v1/corpus/status`.
+Corte: **2026-10-26**. Las cifras corresponden a esa fecha; el estado vigente hoy se consulta en `GET /api/v1/corpus/status`.
 
 ## Cobertura
 
 | Concepto | Total |
 |---|---|
 | Ordenamientos federales | 198 |
-| Artículos vigentes | 36,336 |
-| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 115,371 |
+| Artículos vigentes | 36,332 |
+| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 115,367 |
 | Disposiciones con fuente oficial y checksum SHA-256 | 100% |
 
 Jurisdicción: **federal**. Las normas estatales y municipales no están incluidas.
 
-Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 114,072 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
+Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 114,068 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
 
 Última reforma incorporada: Constitución, DOF 2026-10-07 (nacionalidad única para titulares de los Ejecutivos federal y locales; artículos 82, 116 y 122), vigente desde el 2026-10-08.
 
