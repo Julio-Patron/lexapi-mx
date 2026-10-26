@@ -45,7 +45,12 @@
   `code: outside_coverage`, `message`, `as_of`, `coverage_start_date` y
   `norm_slug`; la búsqueda responde `200` con `data: []` y
   `meta.coverage.status: outside_coverage`, y `POST /resolve`, con
-  `coverage.status: outside_coverage`. Ninguna de esas respuestas se cobra.
+  `coverage.status: outside_coverage`. Ninguna de esas respuestas se cobra. Una
+  fecha futura responde `future_not_available` por las mismas vías (`404` en el
+  artículo y la estructura, `meta.coverage.status` en la búsqueda,
+  `coverage.status` en `resolve`), tampoco se cobra, y "futura" es más allá de
+  mañana: el servidor cuenta en UTC y un cliente adelantado (o el MCP, con la
+  fecha de la Ciudad de México) manda su "hoy".
 
 ## Operaciones
 
@@ -173,6 +178,12 @@ una vez: van todos, en el orden del documento, con `citation.status`
 `ambiguous_legacy`, `ambiguity_count` y un aviso en `warnings`. Una cita en
 femenino ("Primera") se queda con la sección que numera así. Si el transitorio
 no existe, `warnings` dice cuáles tiene la norma ("sus transitorios son 1 a 13").
+Los transitorios de los decretos que reformaron la norma no se citan por número:
+están en `estructura`, bajo el nodo `decreto` "Artículos transitorios de decretos
+de reforma" y, dentro, un nodo `decreto` por decreto con su fecha de publicación
+(`/lft/decreto/decretos-de-reforma/decreto/dof-2019-05-01`, "Decreto DOF
+2019-05-01": título del decreto y línea del DOF en su texto) y sus artículos
+transitorios debajo (`…/transitorio/transitorios/transitorio/primero`).
 
 En cada item que es un artículo o un transitorio, `full_text` trae el texto
 completo, con sus fracciones e incisos; `full_text_checksum` es su SHA-256 y `components`, las
@@ -436,7 +447,8 @@ cuentan contra ese tope.
 
 Una `fecha` anterior al baseline de la norma responde `404` con
 `code: outside_coverage`, con o sin `include_text`: el árbol y el texto vigentes
-no se presentan como los de esa fecha. No se cobra.
+no se presentan como los de esa fecha. No se cobra. Una fecha futura (más allá de
+mañana) responde `404` con `code: future_not_available`.
 
 ```json
 {
@@ -499,6 +511,12 @@ no se presentan como los de esa fecha. No se cobra.
 }
 ```
 
+Los nodos de título, capítulo y sección llevan en `text` la línea del
+encabezado, su nombre y sus anotaciones ("CAPÍTULO I", "Disposiciones
+generales", "Capítulo adicionado DOF 09-12-2019", una por línea), con su
+`checksum` y su fuente como cualquier otro nodo; `label` conserva la forma de
+cita ("Capítulo I").
+
 ---
 
 ## `GET /articulos/search`
@@ -506,6 +524,19 @@ no se presentan como los de esa fecha. No se cobra.
 Búsqueda full-text de artículos. Devuelve como máximo una versión oficial por
 nodo, aplicable a `fecha` o a la fecha actual del servidor cuando se omite.
 Excluye normas deprecadas, fuentes no oficiales y datos de prueba.
+
+Busca tanto en el texto del artículo como en sus fracciones, incisos y apartados,
+sin distinguir acentos. Si varias partes coinciden, el artículo aparece una sola
+vez. Para texto libre, primero devuelve los artículos que tienen todos los
+términos en una misma disposición y después los que tienen alguno (respaldo OR),
+hasta el `limit` solicitado.
+
+Las frases entre comillas, el operador `OR` y las exclusiones con `-` conservan
+su significado y no activan esa ampliación. Los operadores se evalúan por
+disposición: `hostigamiento -sexual` puede encontrar una fracción sin «sexual»
+y devolver el artículo completo, aunque otra fracción sí contenga esa palabra.
+El orden prioriza coincidencias estrictas y relevancia; los empates se resuelven
+por nombre corto de norma, orden del documento e identificador del artículo.
 
 ### Parámetros
 
@@ -533,6 +564,8 @@ las normas que abarca la búsqueda: la de `norma` o las que dejan `materia` y
   y la búsqueda no las incluye.
 - `outside_coverage`: ninguna tiene texto a esa fecha; `data` llega vacío,
   `coverage_start_date` dice desde cuándo hay texto y la petición no se cobra.
+- `future_not_available`: la fecha está más allá de mañana; `data` llega vacío y
+  la petición no se cobra (no se pronostican reformas).
 
 Cada artículo llega completo: `text` incluye sus fracciones e incisos en el orden
 del documento, con su marcador («I.», «a)»), y `checksum` es el SHA-256 de ese
@@ -626,7 +659,8 @@ Artículo específico. Acepta `fecha` opcional (`YYYY-MM-DD`); cuando se omite,
 selecciona la versión oficial aplicable a la fecha actual del servidor. Devuelve
 `404` con `code: article_not_found` si el id no es un UUID, no existe o no regía
 en esa fecha, y `404` con `code: outside_coverage`, `coverage_start_date` y
-`norm_slug` si la fecha es anterior al baseline de su norma. El texto completo
+`norm_slug` si la fecha es anterior al baseline de su norma, y `404` con
+`code: future_not_available` si está más allá de mañana. El texto completo
 (`text`, `checksum`, `components`) y la cita (`canonical_citation`,
 `citation_status`) siguen las reglas de la búsqueda.
 

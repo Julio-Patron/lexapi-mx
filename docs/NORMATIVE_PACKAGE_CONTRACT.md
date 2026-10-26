@@ -23,6 +23,12 @@ identificadores públicos estables usan URN versionadas:
 | Cita | `urn:lexapi-mx:citation:v1:{stable_identifier}` |
 | Paquete | `urn:lexapi-mx:package:v1:{sha256}` |
 
+El `stable_identifier` de un nodo sigue la jerarquía del documento
+(`lft:titulo:primero:capitulo:i:articulo:1`). Si una corrección de extracción
+reubica el nodo bajo el encabezado que le corresponde, el nodo conserva su `id`
+y sus versiones, su URN cambia y la anterior sigue resolviendo en `POST
+/resolve`; el `id` del artículo es la referencia que no cambia.
+
 El `package_id` se calcula sobre versión de contrato, consulta normalizada,
 fecha solicitada y versiones devueltas: las de cada item y, cuando un artículo
 trae `full_text`, las de sus fracciones e incisos. La misma consulta sobre las
@@ -47,7 +53,9 @@ Un artículo transitorio (`"Artículo 2 transitorio LFT"`) resuelve al nodo
 `transitorio` de su norma. Cada sección de transitorios numera los suyos (la de la
 ley y la del decreto que la expide): si el número se repite, van todos los nodos
 en el orden del documento, cada uno `ambiguous_legacy` con su `ambiguity_count`,
-y `warnings` lo explica.
+y `warnings` lo explica. Los transitorios de los decretos de reforma (nodos
+`decreto` de la estructura, uno por decreto con su fecha del DOF) no se resuelven
+por número: se leen con `GET /normas/{slug}/estructura`.
 
 Los números compuestos (`1390 Bis 1`, `195-Z-40`, `58-14`) se conservan tal
 cual en las citas.

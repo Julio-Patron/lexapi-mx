@@ -73,11 +73,12 @@ y el checksum del texto.
 |---|---|---|
 | `resolve_legal_citation` | `query`, `fecha`, `jurisdiccion` | Paquete normativo v1: normas, nodos, citas, cobertura, fuente y checksum; en cada artículo o transitorio ("Artículo 2 transitorio LFT"), `full_text` con sus fracciones e incisos. |
 | `search_mexican_law` | `query`, `fecha`, `jurisdiccion` | Artículos vigentes completos (con sus fracciones e incisos), con cita, vigencia, fuente y checksum. |
-| `get_norm_structure` | `norma`, `fecha` | Índice de la norma: `resumen` con el primer y el último artículo y los nodos por tipo; `indice` con libros, títulos y capítulos en orden y los números de sus artículos (las fracciones e incisos se cuentan, no se listan). `include_text=true` agrega en `textos` una página de 200 nodos en el orden del documento, cada uno con su texto, vigencia, fuente y checksum (`page`; revisa `text_page.has_more`), y requiere un plan de la API. |
+| `get_norm_structure` | `norma`, `fecha` | Índice de la norma: `resumen` con el primer y el último artículo y los nodos por tipo; `indice` con libros, títulos y capítulos en orden y los números de sus artículos (las fracciones e incisos se cuentan, no se listan), las secciones de transitorios y, al final, los decretos de reforma con su fecha del DOF y sus transitorios. `include_text=true` agrega en `textos` una página de 200 nodos en el orden del documento, cada uno con su texto, vigencia, fuente y checksum (`page`; revisa `text_page.has_more`), y requiere un plan de la API. |
 
 - `fecha` acepta `"vigente"` (fecha actual en la Ciudad de México) o
   `YYYY-MM-DD`. Una fecha anterior al inicio de cobertura devuelve
-  `outside_coverage`; nunca se presenta texto actual como histórico.
+  `outside_coverage` y una futura (más allá de mañana), `future_not_available`;
+  nunca se presenta texto actual como histórico ni como futuro.
 - `jurisdiccion` sólo acepta `"federal"` mientras no existan programas estatales.
 
 ## Errores
@@ -89,6 +90,6 @@ Cada error llega al agente con la acción para su siguiente llamada.
 | 401 | La clave es inválida, expiró o fue revocada. |
 | 402 | Saldo agotado, con el enlace para recargar créditos y la indicación de no reintentar y avisar al responsable de la cuenta. |
 | 403 | La clave no tiene el scope requerido, o la operación es de los planes de la API (mapa normativo, texto completo de una norma). |
-| 404 | La norma no existe (con la forma de obtener su slug u omitirlo) o, en `get_norm_structure`, la fecha es anterior al inicio de cobertura de la norma (`outside_coverage`, con la fecha desde la que hay texto y la fecha con la que conviene volver a llamar). En `search_mexican_law` y `resolve_legal_citation` la falta de cobertura llega en la respuesta (`meta.coverage` y `coverage`), sin costo. |
+| 404 | La norma no existe (con la forma de obtener su slug u omitirlo) o, en `get_norm_structure`, la fecha es anterior al inicio de cobertura de la norma (`outside_coverage`, con la fecha desde la que hay texto y la fecha con la que conviene volver a llamar) o es futura (`future_not_available`, con la indicación de volver con `fecha="vigente"`). En `search_mexican_law` y `resolve_legal_citation` la falta de cobertura llega en la respuesta (`meta.coverage` y `coverage`), sin costo. |
 | 429 | Límite de peticiones alcanzado (plan gratuito: 10 por minuto y 200 por día por cuenta, sumando todas sus claves; planes de la API: 120 por minuto por clave). La respuesta trae `Retry-After` con los segundos de espera: si son 30 o menos, el servidor espera y reintenta solo, hasta dos veces; si son más, el agente recibe cuánto esperar. El plan gratuito permite además 2 claves activas y búsquedas de hasta 10 artículos. |
 | Red | No se pudo contactar a Lex API MX. |

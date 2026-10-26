@@ -398,6 +398,18 @@ def test_oversized_search_result_asks_to_narrow_the_query():
         ),
         (
             404,
+            {
+                "detail": {
+                    "code": "future_not_available",
+                    "message": "La fecha 2099-01-01 es futura: Lex API MX no pronostica reformas.",
+                    "as_of": "2099-01-01",
+                }
+            },
+            {},
+            "Vuelve a llamar con fecha='vigente' y aclara al usuario que Lex API MX no pronostica",
+        ),
+        (
+            404,
             {"detail": {"code": "norm_not_found", "message": "Norma 'lfx' no encontrada"}},
             {},
             r"Norma 'lfx' no encontrada\. Usa el slug .* infiere la norma",
