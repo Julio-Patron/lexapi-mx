@@ -52,6 +52,23 @@
   mañana: el servidor cuenta en UTC y un cliente adelantado (o el MCP, con la
   fecha de la Ciudad de México) manda su "hoy".
 
+### Compilaciones con derogaciones parciales
+
+La cobertura temporal describe el texto conservado por el corpus; no certifica
+que todas las disposiciones de una compilación sean aplicables a un caso.
+Cuando la fuente contiene una derogación condicionada, `applicability_notice`
+acompaña a la norma, su estructura y sus artículos (incluidos búsqueda e historial),
+y a las referencias de `resolve` y del mapa. Incluye `code`, `message`,
+`source_url`, `source_sha256` y `source_pages`; `resolve.warnings` repite el aviso.
+El aviso no se incorpora al texto ni cambia su checksum.
+
+`conditional_applicability` identifica esa limitación en los reglamentos de
+órganos, tejidos y cadáveres y de control sanitario de actividades,
+establecimientos, productos y servicios. Las cláusulas oficiales de derogación
+deben cotejarse para determinar la aplicabilidad individual; no se infiere una
+lista exhaustiva de artículos derogados. El campo puede faltar o ser `null`
+en las demás normas.
+
 ## Operaciones
 
 - `GET /normas`, `GET /normas/{slug}`, `GET /normas/{slug}/estructura`
@@ -343,7 +360,13 @@ mucho cada diez minutos y lleva `Cache-Control: public, max-age=300`.
 texto oficial vigente en `as_of` (las cifras que publica la web). `latest_version_from`
 es la vigencia más reciente entre las versiones oficiales (una reforma o una corrección
 de extracción). `monitor` dice cuándo se revisaron por última vez los documentos
-oficiales, cuántos se vigilan y cuántos cambios esperan revisión jurídica.
+oficiales, cuántos se vigilan y cuántos objetivos tienen cambios pendientes de
+revisión jurídica. `targets` incluye activos y `review_required`.
+`pending_changes` cuenta cada objetivo una sola vez si requiere revisión,
+tiene un evento `detected`, `pending_legal_review` o `failed`, o su última
+sonda activa difiere del baseline. Los eventos abiertos siguen contando aunque
+la sonda posterior coincida con el baseline o el objetivo esté pausado; una
+fuente todavía no consultada no se considera un cambio solo por carecer de hash.
 
 ---
 

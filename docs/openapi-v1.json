@@ -1,6 +1,42 @@
 {
   "components": {
     "schemas": {
+      "ApplicabilityNotice": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "source_pages": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Source Pages",
+            "type": "array"
+          },
+          "source_sha256": {
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "source_url",
+          "source_sha256",
+          "source_pages"
+        ],
+        "title": "ApplicabilityNotice",
+        "type": "object"
+      },
       "BillingProfileRequest": {
         "properties": {
           "cfdi_use": {
@@ -230,6 +266,16 @@
       },
       "MapApplicableNorm": {
         "properties": {
+          "applicability_notice": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApplicabilityNotice"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "articles": {
             "default": [],
             "items": {
@@ -384,6 +430,16 @@
       "MapArticle": {
         "description": "Artículo de referencia del mapa, completo: `text` con sus fracciones e incisos,\n`checksum` su SHA-256 y `components` la versión de cada parte.",
         "properties": {
+          "applicability_notice": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApplicabilityNotice"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "checksum": {
             "anyOf": [
               {
@@ -681,6 +737,16 @@
       },
       "NormReference": {
         "properties": {
+          "applicability_notice": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApplicabilityNotice"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "title": "Id",
             "type": "string"
@@ -2414,7 +2480,7 @@
     },
     "/api/v1/corpus/status": {
       "get": {
-        "description": "Cifras vigentes del corpus y última revisión de las fuentes. Sin clave ni cobro.\n\n`norms`, `articles` y `provisions` son los ordenamientos, artículos y disposiciones\ncon texto oficial vigente en `as_of` (las mismas cifras que publica la web).\n`latest_version_from` es la vigencia más reciente entre las versiones oficiales\n(reformas o correcciones). `monitor` dice cuándo se revisaron por última vez los\ndocumentos oficiales, cuántos se vigilan y cuántos cambios esperan revisión\njurídica. La respuesta se calcula como mucho cada diez minutos.",
+        "description": "Cifras vigentes del corpus y última revisión de las fuentes. Sin clave ni cobro.\n\n`norms`, `articles` y `provisions` son los ordenamientos, artículos y disposiciones\ncon texto oficial vigente en `as_of` (las mismas cifras que publica la web).\n`latest_version_from` es la vigencia más reciente entre las versiones oficiales\n(reformas o correcciones). `monitor` dice cuándo se revisaron por última vez los\ndocumentos oficiales, cuántos se vigilan (activos y en revisión) y cuántos\nobjetivos tienen cambios pendientes de revisión jurídica. Los eventos sin\nresolver siguen contando aunque la última sonda coincida con el baseline\no el objetivo esté pausado. La respuesta se calcula como mucho cada diez minutos.",
         "operationId": "get_corpus_status",
         "responses": {
           "200": {
