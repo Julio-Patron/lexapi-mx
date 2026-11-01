@@ -1,23 +1,29 @@
 # Catálogo de Lex API MX
 
-Corte: **2026-10-26**. Las cifras corresponden a esa fecha; el estado vigente hoy se consulta en `GET /api/v1/corpus/status`.
+Corte: **2026-10-30**. Las cifras corresponden a esa fecha; el estado vigente hoy se consulta en `GET /api/v1/corpus/status`.
 
 ## Cobertura
 
 | Concepto | Total |
 |---|---|
-| Ordenamientos federales | 198 |
-| Artículos vigentes | 36,332 |
-| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 115,367 |
+| Ordenamientos federales | 204 |
+| Artículos vigentes | 37,153 |
+| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 116,749 |
 | Disposiciones con fuente oficial y checksum SHA-256 | 100% |
 
 Jurisdicción: **federal**. Las normas estatales y municipales no están incluidas.
 
-Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 114,068 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
+Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 115,450 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
 
 Última reforma incorporada: Constitución, DOF 2026-10-07 (nacionalidad única para titulares de los Ejecutivos federal y locales; artículos 82, 116 y 122), vigente desde el 2026-10-08.
 
 Cobertura temporal: texto vigente con trazabilidad prospectiva desde la incorporación de cada norma. Una consulta anterior al inicio de cobertura devuelve `outside_coverage`; no se reconstruye historia general.
+
+Los reglamentos de órganos, tejidos y cadáveres y de control sanitario de
+actividades, establecimientos, productos y servicios contienen derogaciones
+parciales condicionadas. La API entrega `applicability_notice` con la fuente
+y su SHA; la cobertura documental no certifica la aplicabilidad de todas sus
+disposiciones. Véase [el contrato del aviso](API_SPEC.md#compilaciones-con-derogaciones-parciales).
 
 El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 
@@ -41,7 +47,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `CNPP` | `cnpp` | Código Nacional de Procedimientos Penales |
 | `CPF` | `cpf` | Código Penal Federal |
 
-## Leyes (119)
+## Leyes (122)
 
 | Clave | Slug | Nombre oficial |
 |---|---|---|
@@ -58,7 +64,9 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `LCE` | `lce` | Ley de Comercio Exterior |
 | `LCM` | `lcm` | Ley de Concursos Mercantiles |
 | `LCF` | `lcf` | Ley de Coordinación Fiscal |
+| `LDRS` | `ldrs` | LEY de Desarrollo Rural Sustentable |
 | `LDFEFM` | `ldfefm` | Ley de Disciplina Financiera de las Entidades Federativas y los Municipios |
+| `LECampo` | `lecampo` | LEY de Energía para el Campo |
 | `LFEA` | `lfea` | Ley de Firma Electrónica Avanzada |
 | `LFRCF` | `lfrcf` | Ley de Fiscalización y Rendición de Cuentas de la Federación |
 | `LFCC` | `lfcc` | Ley de Fomento a la Confianza Ciudadana |
@@ -74,6 +82,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `LMigra` | `lmigra` | Ley de Migración |
 | `LNCM` | `lncm` | Ley de Navegación y Comercio Marítimos |
 | `LOPSRM` | `lopsrm` | Ley de Obras Públicas y Servicios Relacionados con las Mismas |
+| `LOGan` | `logan` | LEY de Organizaciones Ganaderas |
 | `LPLAN` | `lplan` | Ley de Planeación |
 | `LPO` | `lpo` | LEY de Productos Orgánicos |
 | `LPAB` | `lpab` | Ley de Protección al Ahorro Bancario |
@@ -165,7 +174,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `LFGFAGA` | `lfgfaga` | Ley que Crea el Fondo de Garantía y Fomento para la Agricultura, Ganadería y Avicultura |
 | `LCS` | `lcs` | Ley Sobre el Contrato de Seguro |
 
-## Reglamentos (69)
+## Reglamentos (72)
 
 | Clave | Slug | Nombre oficial |
 |---|---|---|
@@ -178,12 +187,15 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `RLBOGM` | `reg_lbogm` | REGLAMENTO de la Ley de Bioseguridad de Organismos Genéticamente Modificados |
 | `RLCEC` | `reg_lcec` | Reglamento de la Ley de Cámaras Empresariales y sus Confederaciones |
 | `RLCE` | `reg_lce` | Reglamento de la Ley de Comercio Exterior |
+| `RLDRS` | `reg_ldrs_moirsse` | REGLAMENTO de la Ley de Desarrollo Rural Sustentable en Materia de Organismos, Instancias de Representación, Sistemas y Servicios Especializados |
+| `RLECampo` | `reg_lecampo` | REGLAMENTO de la Ley de Energía para el Campo |
 | `RLFEA` | `reg_lfea` | Reglamento de la Ley de Firma Electrónica Avanzada |
 | `RLICAL` | `reg_lical` | Reglamento de la Ley de Infraestructura de la Calidad |
 | `RLIE-RNIE` | `reg_lie_rnie` | Reglamento de la Ley de Inversión Extranjera y del Registro Nacional de Inversiones Extranjeras |
 | `RLSAR` | `reg_lsar` | Reglamento de la Ley de los Sistemas de Ahorro para el Retiro |
 | `RLMigra` | `reg_lmigra` | Reglamento de la Ley de Migración |
 | `RLOPSRM` | `reg_lopsrm` | Reglamento de la Ley de Obras Públicas y Servicios Relacionados con las Mismas |
+| `RLOGan` | `reg_logan` | REGLAMENTO de la Ley de Organizaciones Ganaderas |
 | `RLPO` | `reg_lpo` | REGLAMENTO de la Ley de Productos Orgánicos |
 | `RLTF` | `reg_ltf` | Reglamento de la Ley de Tesorería de la Federación |
 | `RLIVA` | `reg_liva` | Reglamento de la Ley del Impuesto al Valor Agregado |

@@ -295,6 +295,39 @@ def test_structure_becomes_a_compact_index_with_article_range():
     }
 
 
+def test_structure_preserves_applicability_notice_and_requested_slug():
+    notice = {
+        "code": "conditional_applicability",
+        "message": "Derogación parcial condicionada en transitorios de la fuente oficial.",
+        "source": "Cámara de Diputados",
+        "source_url": "https://www.diputados.gob.mx/LeyesBiblio/regley/Reg_LGS_CSOTCSP.pdf",
+        "source_sha256": "a" * 64,
+        "source_pages": [1, 33],
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "norma": "reg_lgs_organos_tejidos_cadaveres",
+                "requested_slug": "reglamento-trasplantes",
+                "fecha": "2026-10-30",
+                "applicability_notice": notice,
+                "text_page": None,
+                "estructura": [_articulo("1")],
+            },
+        )
+
+    result = _call(
+        _build(handler),
+        "get_norm_structure",
+        {"norma": "reglamento-trasplantes", "fecha": "2026-10-30"},
+    )
+
+    assert result.structured_content["requested_slug"] == "reglamento-trasplantes"
+    assert result.structured_content["applicability_notice"] == notice
+
+
 def test_structure_text_page_keeps_node_text_fields_in_tree_order():
     version = {
         "node_version_id": "v-2",

@@ -245,6 +245,8 @@ def compact_structure(payload: dict[str, Any]) -> dict[str, Any]:
     result: dict[str, Any] = {"norma": payload.get("norma"), "fecha": payload.get("fecha")}
     if payload.get("requested_slug"):
         result["requested_slug"] = payload["requested_slug"]
+    if payload.get("applicability_notice"):
+        result["applicability_notice"] = payload["applicability_notice"]
     result["resumen"] = {
         "articulos": len(articles),
         "primer_articulo": articles[0] if articles else None,
