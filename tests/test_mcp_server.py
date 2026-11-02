@@ -32,6 +32,12 @@ def test_tools_require_date_and_jurisdiction():
         "search_mexican_law",
         "get_norm_structure",
         "resolve_legal_citation",
+        "map_legal_topic",
+        "get_legal_article",
+        "list_legal_norms",
+        "get_legal_norm",
+        "get_legal_article_history",
+        "get_corpus_status",
     }
     assert set(tools["search_mexican_law"].input_schema["required"]) == {
         "query",
@@ -45,6 +51,55 @@ def test_tools_require_date_and_jurisdiction():
     }
     assert set(tools["get_norm_structure"].input_schema["required"]) == {"norma", "fecha"}
     assert all(tool.annotations.read_only_hint for tool in tools.values())
+
+
+@pytest.mark.parametrize(
+    ("tool", "arguments", "path", "params"),
+    [
+        (
+            "list_legal_norms",
+            {
+                "jurisdiccion": "federal",
+                "materia": "laboral",
+                "page": 2,
+                "limit": 5,
+                "idempotency_key": "retry",
+            },
+            "/api/v1/normas",
+            {"jurisdiccion": "federal", "materia": "laboral", "page": "2", "limit": "5"},
+        ),
+        ("get_legal_norm", {"norma": "lft", "idempotency_key": "retry"}, "/api/v1/normas/lft", {}),
+        (
+            "get_legal_article_history",
+            {"article_id": "11111111-1111-1111-1111-111111111111", "idempotency_key": "retry"},
+            "/api/v1/articulos/11111111-1111-1111-1111-111111111111/historial",
+            {},
+        ),
+        ("get_corpus_status", {}, "/api/v1/corpus/status", {}),
+    ],
+)
+def test_catalog_history_and_status_preserve_api_payload(tool, arguments, path, params):
+    payload = {
+        "data": [
+            {
+                "source_url": "https://www.diputados.gob.mx/",
+                "checksum": "a" * 64,
+                "valid_from": "2026-11-02",
+                "valid_to": None,
+            }
+        ],
+        "coverage": "prospective",
+    }
+
+    def handler(request):
+        assert request.method == "GET" and request.url.path == path
+        assert dict(request.url.params) == params
+        assert request.headers["X-API-Key"] == "test-key"
+        assert request.headers.get("Idempotency-Key") == arguments.get("idempotency_key")
+        return httpx.Response(200, json=payload)
+
+    result = _call(_build(handler), tool, arguments)
+    assert not result.is_error and result.structured_content == payload
 
 
 def test_resolve_forwards_contract_payload_and_returns_package_unchanged():
@@ -142,7 +197,7 @@ def test_invalid_date_or_jurisdiction_never_reaches_api(arguments):
 @pytest.mark.parametrize(
     ("status", "body", "expected"),
     [
-        (402, {"detail": "Insufficient credits"}, "lexapi.mx/dashboard"),
+        (402, {"detail": "Insufficient credits"}, "lexapi.mx/cuenta"),
         (
             402,
             {"detail": {"code": "insufficient_credits", "message": "Saldo agotado: recarga."}},

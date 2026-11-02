@@ -26,7 +26,7 @@ from pydantic import Field
 from . import __version__
 
 DEFAULT_BASE_URL = "https://api.lexapi.mx"
-DASHBOARD_URL = "https://lexapi.mx/dashboard"
+DASHBOARD_URL = "https://lexapi.mx/cuenta"
 
 # Protección del contexto del agente: unos 100 mil tokens.
 MAX_RESULT_CHARS = 400_000
@@ -39,7 +39,9 @@ fuente oficial, el checksum SHA-256 y la vigencia de cada texto. Reglas de uso:
 2. Elige la herramienta: con una cita ("Artículo 47 LFT") o una situación descrita
    en una frase, resolve_legal_citation; para localizar artículos por tema sin
    conocer el número, search_mexican_law; para saber qué artículos tiene una norma
-   o hasta qué número llega, get_norm_structure.
+   o hasta qué número llega, get_norm_structure. Para descubrir slugs usa
+   list_legal_norms; para metadatos actuales, get_legal_norm; para versiones
+   conservadas, get_legal_article_history; para estado y alcance, get_corpus_status.
 3. Cita exactamente la referencia canónica, el URL de la fuente oficial y el
    checksum que devuelva la herramienta; no inventes artículos ni fracciones.
 4. Si la respuesta dice `not_found` o no trae resultados, dilo explícitamente. Si
@@ -51,11 +53,15 @@ fuente oficial, el checksum SHA-256 y la vigencia de cada texto. Reglas de uso:
    hechos del caso ocurrieron en otra fecha, consulta también esa fecha y dilo.
 6. Si una herramienta responde un error, sigue la acción que propone antes de
    rendirte.
-7. `include_text=True` en get_norm_structure requiere un plan de la API; con el
-   plan gratuito responde 403. Para leer artículos usa search_mexican_law o
-   resolve_legal_citation.
+7. API y MCP comparten cuenta, permisos y cuota. La lectura incluida permite
+   artículos completos, estructura, FTS, resolve y mapa dentro de su cobertura.
+   Respeta los límites de resultados, texto y concurrencia; no extraigas el corpus
+   sin límite. Revisa la política activa de la cuenta.
 8. Saldo agotado (402): no reintentes; avisa al responsable de la cuenta con el
    enlace de recarga que trae el error.
+9. Cuota mensual agotada (429 monthly_quota_exceeded): no reintentes en bucle;
+   informa cuándo se renueva. No requiere comprar créditos. Para un reintento
+   identificado conserva idempotency_key y todos los parámetros; la ráfaga sí cuenta.
 """
 
 Fecha = Annotated[
@@ -77,6 +83,13 @@ Norma = Annotated[
     Field(
         max_length=120,
         description="Slug de la norma para acotar la búsqueda (ej. 'lft', 'cff', 'lisr').",
+    ),
+]
+IdempotencyKey = Annotated[
+    str | None,
+    Field(
+        max_length=200,
+        description="Identificador del mismo reintento; conserva también todos los parámetros. Una consulta distinta necesita otro identificador.",
     ),
 ]
 
@@ -150,8 +163,7 @@ def describe_api_error(error: LexApiError) -> str:
     if error.status_code == 402:
         if not detail.get("message"):
             message = (
-                "Saldo agotado. El plan gratuito incluye 500 créditos al mes. Para más "
-                "volumen o para integrar Lex API MX en tu producto, contrata un plan en "
+                "Saldo del contrato de créditos agotado. Consulta las condiciones de la cuenta en "
                 f"{DASHBOARD_URL}."
             )
         url = str(detail.get("top_up_url") or DASHBOARD_URL)
@@ -186,6 +198,8 @@ def describe_api_error(error: LexApiError) -> str:
     if error.status_code == 409:
         return f"{message} {NORM_HINT}"
     if error.status_code == 429:
+        if code == "monthly_quota_exceeded":
+            return f"{message} No reintentes en bucle. La cuota se renueva en {detail.get('resets_at', 'el siguiente mes UTC')}; no se desbloquea comprando créditos."
         return f"Límite de peticiones alcanzado. {message} {_wait_hint(error.retry_after)}"
     suffix = f" (request_id={error.request_id})" if error.request_id else ""
     return f"Lex API MX respondió {error.status_code}: {message}{suffix}"
@@ -317,6 +331,7 @@ def build_server(client: LexApiClient) -> MCPServer:
             Field(max_length=80, description="Materia para acotar (ej. 'laboral', 'fiscal')."),
         ] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 10,
+        idempotency_key: IdempotencyKey = None,
     ) -> dict[str, Any]:
         """Busca por términos artículos de leyes y reglamentos federales mexicanos con el texto que regía en `fecha`.
 
@@ -341,6 +356,7 @@ def build_server(client: LexApiClient) -> MCPServer:
                 jurisdiction=jurisdiccion,
                 as_of=resolve_fecha(fecha),
                 limit=limit,
+                idempotency_key=idempotency_key,
             )
         )
 
@@ -359,8 +375,8 @@ def build_server(client: LexApiClient) -> MCPServer:
             bool,
             Field(
                 description=(
-                    "Incluir el texto de los nodos (planes de la API; el plan gratuito recibe "
-                    "403). El texto llega por páginas de 200 nodos en el orden del árbol: "
+                    "Incluir el texto de los nodos conforme a los permisos y cuota de la cuenta. "
+                    "El texto llega por páginas de 200 nodos en el orden del árbol: "
                     "revisa text_page.has_more y pide la siguiente con page."
                 )
             ),
@@ -368,6 +384,7 @@ def build_server(client: LexApiClient) -> MCPServer:
         page: Annotated[
             int, Field(ge=1, description="Página de texto cuando include_text=True.")
         ] = 1,
+        idempotency_key: IdempotencyKey = None,
     ) -> dict[str, Any]:
         """Devuelve el índice de una norma federal mexicana en `fecha`: sus divisiones y los números de sus artículos.
 
@@ -388,6 +405,7 @@ def build_server(client: LexApiClient) -> MCPServer:
                     as_of=resolve_fecha(fecha),
                     include_text=include_text,
                     page=page,
+                    idempotency_key=idempotency_key,
                 )
             )
         )
@@ -410,6 +428,7 @@ def build_server(client: LexApiClient) -> MCPServer:
         jurisdiccion: Jurisdiccion,
         norma: Norma = None,
         limit: Annotated[int, Field(ge=1, le=20)] = 5,
+        idempotency_key: IdempotencyKey = None,
     ) -> dict[str, Any]:
         """Resuelve una cita o una situación jurídica a un paquete normativo verificable. Es la herramienta preferida para fundamentar una respuesta.
 
@@ -431,8 +450,96 @@ def build_server(client: LexApiClient) -> MCPServer:
                 jurisdiction=jurisdiccion,
                 as_of=resolve_fecha(fecha),
                 limit=limit,
+                idempotency_key=idempotency_key,
             )
         )
+
+    @server.tool(annotations=READ_ONLY)
+    def map_legal_topic(
+        query: Annotated[str, Field(min_length=2, max_length=2000)],
+        fecha: Fecha,
+        jurisdiccion: Jurisdiccion,
+        idempotency_key: IdempotencyKey = None,
+    ) -> dict[str, Any]:
+        """Consulta el catálogo limitado de temas y sus citas normativas.
+
+        No es un dictamen de aplicabilidad ni búsqueda semántica. Revisa coverage,
+        articles_missing y warnings; conserva fuente, vigencia y SHA de cada artículo.
+        """
+        return fit_context(
+            call(
+                client.map,
+                query=query,
+                as_of=resolve_fecha(fecha),
+                jurisdiction=jurisdiccion,
+                idempotency_key=idempotency_key,
+            )
+        )
+
+    @server.tool(annotations=READ_ONLY)
+    def get_legal_article(
+        article_id: Annotated[str, Field(min_length=36, max_length=36)],
+        fecha: Fecha,
+        idempotency_key: IdempotencyKey = None,
+    ) -> dict[str, Any]:
+        """Lee un artículo completo por el UUID devuelto por la API, con sus componentes y SHA exacto."""
+        return fit_context(
+            call(
+                client.article,
+                article_id=article_id,
+                as_of=resolve_fecha(fecha),
+                idempotency_key=idempotency_key,
+            )
+        )
+
+    @server.tool(annotations=READ_ONLY)
+    def list_legal_norms(
+        jurisdiccion: Jurisdiccion,
+        materia: Annotated[str | None, Field(max_length=120)] = None,
+        page: Annotated[int, Field(ge=1)] = 1,
+        limit: Annotated[int, Field(ge=1, le=100)] = 20,
+        idempotency_key: IdempotencyKey = None,
+    ) -> dict[str, Any]:
+        """Lista el catálogo de normas disponibles y sus slugs, con paginación.
+
+        Son metadatos actuales del catálogo; para texto a una fecha usa las herramientas de lectura.
+        """
+        return fit_context(
+            call(
+                client.list_norms,
+                jurisdiction=jurisdiccion,
+                matter=materia,
+                page=page,
+                limit=limit,
+                idempotency_key=idempotency_key,
+            )
+        )
+
+    @server.tool(annotations=READ_ONLY)
+    def get_legal_norm(
+        norma: Annotated[str, Field(min_length=1, max_length=120)],
+        idempotency_key: IdempotencyKey = None,
+    ) -> dict[str, Any]:
+        """Obtiene metadatos actuales de una norma por slug; no representa su texto histórico."""
+        return fit_context(call(client.norm, norm=norma, idempotency_key=idempotency_key))
+
+    @server.tool(annotations=READ_ONLY)
+    def get_legal_article_history(
+        article_id: Annotated[str, Field(min_length=36, max_length=36)],
+        idempotency_key: IdempotencyKey = None,
+    ) -> dict[str, Any]:
+        """Consulta las versiones conservadas de un artículo con fuente, SHA y vigencia.
+
+        La historia es prospectiva desde el baseline; no completa periodos sin cobertura.
+        """
+        return fit_context(
+            call(client.article_history, article_id=article_id, idempotency_key=idempotency_key)
+        )
+
+    @server.tool(annotations=READ_ONLY)
+    def get_corpus_status() -> dict[str, Any]:
+        """Estado vivo del corpus y monitor, con fecha UTC y alcance declarado por la API."""
+        return fit_context(call(client.corpus_status))
 
     return server
 

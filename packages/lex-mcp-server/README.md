@@ -18,7 +18,7 @@ compacto (el árbol completo de la Ley Federal del Trabajo pesa más de 1 MB; su
 |---|---|---|
 | `resolve_legal_citation` | `POST /api/v1/resolve` | Resolver una cita o situación a un paquete normativo verificable. |
 | `search_mexican_law` | `GET /api/v1/articulos/search` | Buscar artículos vigentes por texto, norma o materia. |
-| `get_norm_structure` | `GET /api/v1/normas/{slug}/estructura` | Índice de una norma: primer y último artículo, divisiones en orden y números de artículo. El texto (`include_text`, por páginas de nodos con `page`) requiere un plan de la API. |
+| `get_norm_structure` | `GET /api/v1/normas/{slug}/estructura` | Índice de una norma: primer y último artículo, divisiones en orden y números de artículo. El texto (`include_text`, por páginas de nodos con `page`) se rige por los permisos y la cuota de la cuenta. |
 
 Todas exigen `fecha` (`"vigente"` o `YYYY-MM-DD`). Las de búsqueda y resolución
 exigen además `jurisdiccion`; hoy la única cobertura es `"federal"`.
@@ -26,7 +26,7 @@ exigen además `jurisdiccion`; hoy la única cobertura es `"federal"`.
 ## Instalación
 
 Requiere [uv](https://docs.astral.sh/uv/) y una clave de Lex API MX. El plan
-gratuito incluye 500 créditos al mes: crea tu cuenta con tu correo y genera la
+gratuito publica sus límites vigentes en Cuenta: crea tu cuenta con tu correo y genera la
 clave en [lexapi.mx/cuenta](https://lexapi.mx/cuenta).
 
 ```json
@@ -73,3 +73,23 @@ hasta dos veces.
 [github.com/Julio-Patron/lexapi-mx](https://github.com/Julio-Patron/lexapi-mx/tree/main/packages/lex-mcp-server)
 (licencia MIT). También está en el [MCP Registry](https://registry.modelcontextprotocol.io)
 como `io.github.Julio-Patron/lex-api-mx`.
+
+## Lectura incluida y versión 0.4.0
+
+API y MCP requieren la misma clave de una cuenta con correo confirmado. La política
+activa de Cuenta determina cuota y permisos; la lectura incluida no exige créditos.
+La cuota mensual se comparte entre claves por cuenta y mes UTC. `monthly_quota_exceeded`
+indica cuándo se renueva; no se resuelve comprando créditos. Se mantienen límites de
+texto, resultados, tamaño y concurrencia.
+
+El MCP 0.4.0 incluye búsqueda, estructura, resolve, `map_legal_topic`,
+`get_legal_article`, `list_legal_norms`, `get_legal_norm`,
+`get_legal_article_history` y `get_corpus_status`.
+El mapa conserva un catálogo limitado de temas. Las ocho lecturas normativas aceptan
+`idempotency_key`: conserva identificador y parámetros para el mismo reintento;
+una petición distinta es otro evento. No se eliminan límites de ráfagas por reintentar.
+`get_corpus_status` consulta el estado público y no consume cuota.
+
+Los contratos previos, saldos e historial se conservan. El catálogo activo informa
+la oferta gratuita y empresarial por volumen/garantías verificadas; sin precio ni
+SLA por defecto, semántica, alertas en tiempo real ni CFDI automático operativo.

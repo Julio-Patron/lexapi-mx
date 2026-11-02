@@ -1480,7 +1480,7 @@
   "info": {
     "description": "API mexicana de consulta normativa estructurada",
     "title": "Lex API MX",
-    "version": "0.3.1"
+    "version": "0.4.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -2682,7 +2682,7 @@
     },
     "/api/v1/normas/{slug}/estructura": {
       "get": {
-        "description": "Árbol de la norma en `fecha` (hoy si se omite): los nodos con una versión oficial\nque rige en esa fecha. `include_text=true` agrega el texto de una página de nodos en\nel orden del documento (`page`, `page_size`; el árbol llega completo y `text_page`\ndice si hay más), cada uno con su vigencia, su fuente y el SHA-256 de su texto\n(`checksum`), y requiere un plan de la API (`403 paid_plan_required` en el plan\ngratuito). Los nodos con texto tienen un tope diario por cuenta\n(`text_nodes_per_day` en `GET /account`; `429 text_quota_exceeded` al rebasarlo). Una\n`fecha` anterior al baseline de la norma responde `404 outside_coverage`; una futura\n(más allá de mañana), `404 future_not_available`.",
+        "description": "Árbol de la norma en `fecha` (hoy si se omite): los nodos con una versión oficial\nque rige en esa fecha. `include_text=true` agrega el texto de una página de nodos en\nel orden del documento (`page`, `page_size`; el árbol llega completo y `text_page`\ndice si hay más), cada uno con su vigencia, su fuente y el SHA-256 de su texto\n(`checksum`), y requiere lectura incluida o permiso de texto completo en el\ncontrato activo (`403 paid_plan_required` si falta). Los nodos con texto tienen un tope diario por cuenta\n(`text_nodes_per_day` en `GET /account`; `429 text_quota_exceeded` al rebasarlo). Una\n`fecha` anterior al baseline de la norma responde `404 outside_coverage`; una futura\n(más allá de mañana), `404 future_not_available`.",
         "operationId": "get_estructura",
         "parameters": [
           {

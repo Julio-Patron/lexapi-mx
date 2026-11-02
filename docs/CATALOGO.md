@@ -347,7 +347,20 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `REG_LPPDDHP` | `reg_lppddhp` | REGLAMENTO de la Ley para la Protección de Personas Defensoras de Derechos Humanos y Periodistas |
 | `REG_LRMINERAS` | `reg_lrmineras` | REGLAMENTO de la Ley que Declara Reservas Mineras Nacionales los Yacimientos de Uranio, Torio y las demás Substancias de las cuales se Obtengan Isótopos Hendibles que puedan Producir Energía Nuclear |
 
-## Operaciones y créditos
+## Lectura incluida
+
+La política activa se consulta en `/api/v1/checkout/catalog` y Cuenta. La lectura
+incluida abre artículos completos, estructura, FTS, resolve y mapa con correo
+confirmado y clave obligatoria. API/MCP comparten cuota por cuenta y mes UTC;
+solo consumen éxitos con resultado. No exige comprar créditos. Se conservan
+límites de resultados, concurrencia, respuesta y texto. Los valores candidatos
+no se publican antes de validar y activar la política.
+
+Oferta empresarial única por cotización de volumen y garantías verificadas,
+sin precio público ni SLA disponible por defecto. Semántica, alertas en tiempo
+real y CFDI automático operativo no forman parte de la oferta disponible.
+
+## Operaciones de contratos anteriores y créditos
 
 | Operación | Endpoint | Evento | Créditos |
 |---|---|---|---|
@@ -362,7 +375,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 
 Solo se cobran respuestas exitosas (2xx) con resultado: una búsqueda sin artículos, un `resolve` sin items y una consulta con una fecha anterior al inicio de cobertura (`outside_coverage`) no se cobran. Un reintento con el mismo `Idempotency-Key` y la misma petición no se cobra dos veces; la clave queda atada al contenido (método, ruta, query y cuerpo).
 
-## Planes
+## Condiciones conservadas de contratos anteriores
 
 | Plan | Incluye | Precio (MXN, IVA incluido) |
 |---|---|---|
@@ -370,7 +383,6 @@ Solo se cobran respuestas exitosas (2xx) con resultado: una búsqueda sin artíc
 | API Inicial | 10,000 créditos al mes; mapa normativo y texto completo de normas; hasta 10 claves; 120 peticiones por minuto por clave | $499 al mes o $4,990 al año |
 | API Profesional | 50,000 créditos al mes; mapa normativo y texto completo de normas; hasta 10 claves; 120 peticiones por minuto por clave | $1,499 al mes o $14,990 al año |
 | Recarga | 1,000 créditos que no caducan | $100 |
-| Institucional | Volumen, condiciones y SLA negociados | A la medida |
 
 Cuando un cliente prepago se queda sin saldo, la API responde `402` con el código `insufficient_credits` y el enlace de recarga.
 
@@ -381,5 +393,11 @@ Cuando un cliente prepago se queda sin saldo, la API responde `402` con el códi
 | `resolve_legal_citation` | `POST /api/v1/resolve` |
 | `search_mexican_law` | `GET /api/v1/articulos/search` |
 | `get_norm_structure` | `GET /api/v1/normas/{slug}/estructura` |
+| `map_legal_topic` | `POST /api/v1/map` |
+| `get_legal_article` | `GET /api/v1/articulos/{id}` |
+| `list_legal_norms` | `GET /api/v1/normas` |
+| `get_legal_norm` | `GET /api/v1/normas/{slug}` |
+| `get_legal_article_history` | `GET /api/v1/articulos/{id}/historial` |
+| `get_corpus_status` | `GET /api/v1/corpus/status` (estado público, sin consumo) |
 
 Instalación: [`MCP_QUICKSTART.md`](MCP_QUICKSTART.md).
