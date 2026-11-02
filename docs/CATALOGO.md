@@ -6,14 +6,14 @@ Corte: **2026-11-02**. Las cifras corresponden a esa fecha; el estado vigente ho
 
 | Concepto | Total |
 |---|---|
-| Ordenamientos federales | 222 |
-| Artículos vigentes | 37,897 |
-| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 119,889 |
+| Ordenamientos federales | 299 |
+| Artículos vigentes | 42,210 |
+| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 135,546 |
 | Disposiciones con fuente oficial y checksum SHA-256 | 100% |
 
 Jurisdicción: **federal**. Las normas estatales y municipales no están incluidas.
 
-Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 118,590 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
+Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 134,247 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
 
 Última reforma incorporada: Constitución, DOF 2026-10-07 (nacionalidad única para titulares de los Ejecutivos federal y locales; artículos 82, 116 y 122), vigente desde el 2026-10-08.
 
@@ -47,7 +47,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `CNPP` | `cnpp` | Código Nacional de Procedimientos Penales |
 | `CPF` | `cpf` | Código Penal Federal |
 
-## Leyes (136)
+## Leyes (200)
 
 | Clave | Slug | Nombre oficial |
 |---|---|---|
@@ -187,8 +187,72 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `LGPSVD` | `lgpsvd` | LEY General para la Prevención Social de la Violencia y la Delincuencia |
 | `LUPDECR` | `lupdecr` | LEY para el uso y protección de la denominación y del emblema de la Cruz Roja |
 | `LPPDDHP` | `lppddhp` | LEY para la Protección de Personas Defensoras de Derechos Humanos y Periodistas |
+| `LFLL` | `lfll` | LEY de Fomento para la Lectura y el Libro |
+| `LGB` | `lgb` | LEY General de Bibliotecas |
+| `LCINBAL` | `lcinbal` | LEY que crea el Instituto Nacional de Bellas Artes y Literatura |
+| `LOSCM` | `loscm` | LEY Orgánica del Seminario de Cultura Mexicana |
+| `LOINAH` | `loinah` | LEY Orgánica del Instituto Nacional de Antropología e Historia |
+| `LOUAAAN` | `louaaan` | LEY Orgánica de la Universidad Autónoma Agraria Antonio Narro |
+| `LOUNAM` | `lounam` | LEY Orgánica de la Universidad Nacional Autónoma de México |
+| `LOIPN` | `loipn` | LEY Orgánica del Instituto Politécnico Nacional |
+| `LCUACh` | `lcuach` | LEY que crea la Universidad Autónoma Chapingo |
+| `LAMN` | `lamn` | LEY de Amnistía |
+| `LAAM` | `laam` | LEY de Ascensos de la Armada de México |
+| `LBIO` | `lbio` | LEY de Biocombustibles |
+| `LCJPJF` | `lcjpjf` | LEY de Carrera Judicial del Poder Judicial de la Federación |
+| `LCMOPFIH` | `lcmopfih` | LEY de Contribución de Mejoras por Obras Públicas Federales de Infraestructura Hidráulica |
+| `LCID` | `lcid` | LEY de Cooperación Internacional para el Desarrollo |
+| `LDEFAGN` | `ldefagn` | LEY de Disciplina del Ejército, Fuerza Aérea y Guardia Nacional (Antes "Ley de Disciplina del Ejército y Fuerza Aérea Mexicanos" ) |
+| `LDPAAM` | `ldpaam` | LEY de Disciplina para el Personal de la Armada de México |
+| `LEMEFAGN` | `lemefagn` | LEY de Educación Militar del Ejército, Fuerza Aérea y Guardia Nacional (Antes "Ley de Educación Militar del Ejército y Fuerza Aérea Mexicanos" ) |
+| `LEN` | `len` | LEY de Educación Naval |
+| `LGEO` | `lgeo` | LEY de Geotermia |
+| `LANSI` | `lansi` | LEY de la Agencia Nacional de Seguridad Industrial y de Protección al Medio Ambiente del Sector Hidrocarburos |
+| `LCMM` | `lcmm` | LEY de la Casa de Moneda de México |
+| `LEPECFE` | `lepecfe` | LEY de la Empresa Pública del Estado, Comisión Federal de Electricidad |
+| `LEPEPM` | `lepepm` | LEY de la Empresa Pública del Estado, Petróleos Mexicanos |
+| `LHHEUM` | `lhheum` | LEY de los Husos Horarios en los Estados Unidos Mexicanos |
+| `LMIN` | `lmin` | LEY de Minería (Antes "Ley Minera" ) |
+| `LNAC` | `lnac` | LEY de Nacionalidad |
+| `LPTE` | `lpte` | LEY de Planeación y Transición Energética |
+| `LPCIENECI` | `lpcieneci` | LEY de Protección al Comercio y la Inversión de Normas Extranjeras que Contravengan el Derecho Internacional |
+| `LPEAM` | `lpeam` | LEY de Protección del Espacio Aéreo Mexicano |
+| `LRAM` | `lram` | LEY de Recompensas de la Armada de México |
+| `LRPV` | `lrpv` | LEY del Registro Público Vehicular |
+| `LSPM` | `lspm` | LEY del Servicio Postal Mexicano |
+| `LSPCAPF` | `lspcapf` | LEY del Servicio Profesional de Carrera en la Administración Pública Federal |
+| `LSNIIMSP` | `lsniimsp` | LEY del Sistema Nacional de Investigación e Inteligencia en Materia de Seguridad Pública |
+| `LFCA` | `lfca` | LEY Federal de Cine y el Audiovisual |
+| `LFCPO` | `lfcpo` | LEY Federal de Consulta Popular |
+| `LFFAOSC` | `lffaosc` | LEY Federal de Fomento a las Actividades Realizadas por Organizaciones de la Sociedad Civil |
+| `LFJS` | `lfjs` | LEY Federal de Juegos y Sorteos |
+| `LFSP` | `lfsp` | LEY Federal de Seguridad Privada |
+| `LFM` | `lfm` | LEY Federal del Mar |
+| `LFCPQ` | `lfcpq` | LEY Federal para el Control de Precursores Químicos, Productos Químicos Esenciales y Máquinas para Elaborar Cápsulas, Tabletas y/o Comprimidos |
+| `LGAG` | `lgag` | LEY General de Aguas |
+| `LGAHOTDU` | `lgahotdu` | LEY General de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano |
+| `LGDS` | `lgds` | LEY General de Desarrollo Social |
+| `LGMSV` | `lgmsv` | LEY General de Movilidad y Seguridad Vial |
+| `LGPSACDII` | `lgpsacdii` | LEY General de Prestación de Servicios para la Atención, Cuidado y Desarrollo Integral Infantil |
+| `LGPC` | `lgpc` | LEY General de Protección Civil |
+| `LGSNSP` | `lgsnsp` | LEY General del Sistema Nacional de Seguridad Pública |
+| `LGSCMM` | `lgscmm` | LEY General del Sistema para la Carrera de las Maestras y los Maestros |
+| `LGMDE` | `lgmde` | LEY General en Materia de Delitos Electorales |
+| `LGCT` | `lgct` | LEY General para el Control del Tabaco |
+| `LNRD` | `lnrd` | LEY Nacional del Registro de Detenciones |
+| `LOAM` | `loam` | LEY Orgánica de la Armada de México |
+| `LFIIEDB` | `lfiiedb` | LEY para el Fomento de la Inversión en Infraestructura Estratégica para el Desarrollo con Bienestar |
+| `LCACSAM` | `lcacsam` | LEY para la Comprobación, Ajuste y Cómputo de Servicios de la Armada de México |
+| `LCACSEFAM` | `lcacsefam` | LEY para la Comprobación, Ajuste y Cómputo de Servicios en el Ejército y Fuerza Aérea Mexicanos |
+| `LACBDC` | `lacbdc` | LEY que Aprueba la Adhesión de México al Convenio Constitutivo del Banco de Desarrollo del Caribe y su Ejecución |
+| `LAEM` | `laem` | LEY que crea la Agencia Espacial Mexicana |
+| `LRMNU` | `lrmnu` | LEY que Declara Reservas Mineras Nacionales los Yacimientos de Uranio, Torio y las demás Substancias de las cuales se Obtengan Isótopos Hendibles que puedan Producir Energía Nuclear |
+| `LCCAIF` | `lccaif` | LEY que Establece Bases para la Ejecución en México, por el Poder Ejecutivo Federal, del Convenio Constitutivo de la Asociación Internacional de Fomento |
+| `LRFV76` | `lrfv76` | LEY Reglamentaria de la Fracción V del Artículo 76 de la Constitución General de la República |
+| `LSATIME` | `lsatime` | LEY Sobre la Aprobación de Tratados Internacionales en Materia Económica |
+| `LRPCAP` | `lrpcap` | LEY sobre Refugiados, Protección Complementaria y Asilo Político (Antes "Ley sobre Refugiados y Protección Complementaria" ) |
 
-## Reglamentos (76)
+## Reglamentos (89)
 
 | Clave | Slug | Nombre oficial |
 |---|---|---|
@@ -268,6 +332,19 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `Reg. LGIPD` | `reg_lgipd` | REGLAMENTO de la Ley General para la Inclusión de las Personas con Discapacidad |
 | `Reg. LGPSVD` | `reg_lgpsvd` | REGLAMENTO de la Ley General para la Prevención Social de la Violencia y la Delincuencia |
 | `Reg. LUPDECR` | `reg_lupdecr` | REGLAMENTO de la Ley para el Uso y Protección de la Denominación y del Emblema de la Cruz Roja |
+| `Reg. LFLL` | `reg_lfll` | REGLAMENTO de la Ley de Fomento para la Lectura y el Libro |
+| `REG_LAAM` | `reg_laam` | REGLAMENTO de la Ley de Ascensos de la Armada de México |
+| `REG_LEN` | `reg_len` | REGLAMENTO de la Ley de Educación Naval |
+| `REG_LEPECFE` | `reg_lepecfe` | REGLAMENTO de la Ley de la Empresa Pública del Estado, Comisión Federal de Electricidad |
+| `REG_LEPEPM` | `reg_lepepm` | REGLAMENTO de la Ley de la Empresa Pública del Estado, Petróleos Mexicanos |
+| `REG_LPTE` | `reg_lpte` | REGLAMENTO de la Ley de Planeación y Transición Energética |
+| `REG_LRPV` | `reg_lrpv` | REGLAMENTO de la Ley del Registro Público Vehicular |
+| `REG_LSPCAPF` | `reg_lspcapf` | REGLAMENTO de la Ley del Servicio Profesional de Carrera en la Administración Pública Federal |
+| `REG_LFCPRECQUIM` | `reg_lfcprecquim` | REGLAMENTO de la Ley Federal para el Control de Precursores Químicos, Productos Químicos Esenciales y Máquinas para Elaborar Cápsulas, Tabletas y/o Comprimidos |
+| `REG_LGPC` | `reg_lgpc` | REGLAMENTO de la Ley General de Protección Civil |
+| `REG_LGCT` | `reg_lgct` | REGLAMENTO de la Ley General para el Control del Tabaco |
+| `REG_LPPDDHP` | `reg_lppddhp` | REGLAMENTO de la Ley para la Protección de Personas Defensoras de Derechos Humanos y Periodistas |
+| `REG_LRMINERAS` | `reg_lrmineras` | REGLAMENTO de la Ley que Declara Reservas Mineras Nacionales los Yacimientos de Uranio, Torio y las demás Substancias de las cuales se Obtengan Isótopos Hendibles que puedan Producir Energía Nuclear |
 
 ## Operaciones y créditos
 
