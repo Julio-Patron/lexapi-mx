@@ -6,14 +6,14 @@ Corte: **2026-11-02**. Las cifras corresponden a esa fecha; el estado vigente ho
 
 | Concepto | Total |
 |---|---|
-| Ordenamientos federales | 207 |
-| Artículos vigentes | 37,286 |
-| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 117,176 |
+| Ordenamientos federales | 222 |
+| Artículos vigentes | 37,897 |
+| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 119,889 |
 | Disposiciones con fuente oficial y checksum SHA-256 | 100% |
 
 Jurisdicción: **federal**. Las normas estatales y municipales no están incluidas.
 
-Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 115,877 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
+Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 118,590 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
 
 Última reforma incorporada: Constitución, DOF 2026-10-07 (nacionalidad única para titulares de los Ejecutivos federal y locales; artículos 82, 116 y 122), vigente desde el 2026-10-08.
 
@@ -47,7 +47,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `CNPP` | `cnpp` | Código Nacional de Procedimientos Penales |
 | `CPF` | `cpf` | Código Penal Federal |
 
-## Leyes (125)
+## Leyes (136)
 
 | Clave | Slug | Nombre oficial |
 |---|---|---|
@@ -176,8 +176,19 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `LRSIC` | `lrsic` | Ley para Regular las Sociedades de Información Crediticia |
 | `LFGFAGA` | `lfgfaga` | Ley que Crea el Fondo de Garantía y Fomento para la Agricultura, Ganadería y Avicultura |
 | `LCS` | `lcs` | Ley Sobre el Contrato de Seguro |
+| `LDPAM` | `ldpam` | LEY de los Derechos de las Personas Adultas Mayores |
+| `LINS` | `lins` | LEY de los Institutos Nacionales de Salud |
+| `LIMJ` | `limj` | LEY del Instituto Mexicano de la Juventud |
+| `LINPI` | `linpi` | LEY del Instituto Nacional de los Pueblos Indígenas |
+| `LGDLPI` | `lgdlpi` | LEY General de Derechos Lingüísticos de los Pueblos Indígenas |
+| `LGCDC` | `lgcdc` | LEY General de Cultura y Derechos Culturales |
+| `LGDOCIA` | `lgdocia` | LEY General para la Detección Oportuna del Cáncer en la Infancia y la Adolescencia |
+| `LGIPD` | `lgipd` | LEY General para la Inclusión de las Personas con Discapacidad |
+| `LGPSVD` | `lgpsvd` | LEY General para la Prevención Social de la Violencia y la Delincuencia |
+| `LUPDECR` | `lupdecr` | LEY para el uso y protección de la denominación y del emblema de la Cruz Roja |
+| `LPPDDHP` | `lppddhp` | LEY para la Protección de Personas Defensoras de Derechos Humanos y Periodistas |
 
-## Reglamentos (72)
+## Reglamentos (76)
 
 | Clave | Slug | Nombre oficial |
 |---|---|---|
@@ -253,6 +264,10 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `RISSSTE-PENSIONES-10T` | `reg_lissste_pensiones_decimo_transitorio` | Reglamento para el Otorgamiento de Pensiones de los Trabajadores Sujetos al Régimen del Artículo Décimo Transitorio del Decreto por el que se expide la Ley del Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado |
 | `RISSSTE-PENSIONES-CI` | `reg_lissste_pensiones_cuentas_individuales` | Reglamento para el Otorgamiento de Pensiones del Régimen de Cuentas Individuales del Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado |
 | `RISSSTE-RIESGOS` | `reg_lissste_riesgos_invalidez` | Reglamento para la Dictaminación en Materia de Riesgos del Trabajo e Invalidez del Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado |
+| `Reg. LGCDC` | `reg_lgcdc` | REGLAMENTO de la Ley General de Cultura y Derechos Culturales |
+| `Reg. LGIPD` | `reg_lgipd` | REGLAMENTO de la Ley General para la Inclusión de las Personas con Discapacidad |
+| `Reg. LGPSVD` | `reg_lgpsvd` | REGLAMENTO de la Ley General para la Prevención Social de la Violencia y la Delincuencia |
+| `Reg. LUPDECR` | `reg_lupdecr` | REGLAMENTO de la Ley para el Uso y Protección de la Denominación y del Emblema de la Cruz Roja |
 
 ## Operaciones y créditos
 
