@@ -41,7 +41,7 @@ agrega:
 }
 ```
 
-Reinicia Claude Desktop. Verás las cinco herramientas de la versión 0.4.0 de Lex API MX en el menú de
+Reinicia Claude Desktop. Verás las nueve herramientas de la versión 0.4.0 de Lex API MX en el menú de
 herramientas.
 
 ## 3. Claude Code
@@ -74,6 +74,12 @@ y el checksum del texto.
 | `resolve_legal_citation` | `query`, `fecha`, `jurisdiccion` | Paquete normativo v1: normas, nodos, citas, cobertura, fuente y checksum; en cada artículo o transitorio ("Artículo 2 transitorio LFT"), `full_text` con sus fracciones e incisos. |
 | `search_mexican_law` | `query`, `fecha`, `jurisdiccion` | Artículos vigentes completos (con sus fracciones e incisos), con cita, vigencia, fuente y checksum. |
 | `get_norm_structure` | `norma`, `fecha` | Índice de la norma: `resumen` con el primer y el último artículo y los nodos por tipo; `indice` con libros, títulos y capítulos en orden y los números de sus artículos (las fracciones e incisos se cuentan, no se listan), las secciones de transitorios y, al final, los decretos de reforma con su fecha del DOF y sus transitorios. `include_text=true` agrega en `textos` una página de 200 nodos en el orden del documento, cada uno con su texto, vigencia, fuente y checksum (`page`; revisa `text_page.has_more`), y se rige por los permisos y la cuota de la cuenta. |
+| `map_legal_topic` | `query`, `fecha`, `jurisdiccion` | Citas del catálogo limitado de temas, fuentes y advertencias. |
+| `get_legal_article` | `article_id`, `fecha` | Artículo completo por UUID con fuente, vigencia y SHA. |
+| `list_legal_norms` | `jurisdiccion` | Catálogo paginado; filtros `materia`, `page` y `limit`. |
+| `get_legal_norm` | `norma` | Metadatos actuales de la norma por slug. |
+| `get_legal_article_history` | `article_id` | Versiones conservadas con sus periodos, fuente y SHA. |
+| `get_corpus_status` | Ninguno | Estado público del corpus y monitor, con fecha UTC; sin consumo. |
 
 - `fecha` acepta `"vigente"` (fecha actual en la Ciudad de México) o
   `YYYY-MM-DD`. Una fecha anterior al inicio de cobertura devuelve
@@ -102,11 +108,13 @@ La cuota mensual se comparte entre claves por cuenta y mes UTC. `monthly_quota_e
 indica cuándo se renueva; no se resuelve comprando créditos. Se mantienen límites de
 texto, resultados, tamaño y concurrencia.
 
-El MCP 0.4.0 añade `map_legal_topic(query, fecha, jurisdiccion)` y
-`get_legal_article(article_id, fecha)`; el mapa conserva un catálogo limitado de temas.
-El SDK añade `article(article_id, as_of=...)`. Las cinco lecturas aceptan
+El MCP 0.4.0 incluye también mapa, artículo por UUID, catálogo paginado, metadatos
+de norma, historial y estado del corpus. El mapa conserva un catálogo limitado de temas.
+El SDK expone `article`, `list_norms`, `norm`, `article_history` y `corpus_status`.
+Las ocho lecturas normativas aceptan
 `idempotency_key`: conserva identificador y parámetros para el mismo reintento;
 una petición distinta es otro evento. No se eliminan límites de ráfagas por reintentar.
+`get_corpus_status` consulta el estado público y no consume cuota.
 
 Los contratos previos, saldos e historial se conservan. El catálogo activo informa
 la oferta gratuita y empresarial por volumen/garantías verificadas; sin precio ni

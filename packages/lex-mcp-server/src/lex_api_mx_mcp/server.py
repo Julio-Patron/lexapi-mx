@@ -39,7 +39,9 @@ fuente oficial, el checksum SHA-256 y la vigencia de cada texto. Reglas de uso:
 2. Elige la herramienta: con una cita ("Artículo 47 LFT") o una situación descrita
    en una frase, resolve_legal_citation; para localizar artículos por tema sin
    conocer el número, search_mexican_law; para saber qué artículos tiene una norma
-   o hasta qué número llega, get_norm_structure.
+   o hasta qué número llega, get_norm_structure. Para descubrir slugs usa
+   list_legal_norms; para metadatos actuales, get_legal_norm; para versiones
+   conservadas, get_legal_article_history; para estado y alcance, get_corpus_status.
 3. Cita exactamente la referencia canónica, el URL de la fuente oficial y el
    checksum que devuelva la herramienta; no inventes artículos ni fracciones.
 4. Si la respuesta dice `not_found` o no trae resultados, dilo explícitamente. Si
@@ -489,6 +491,55 @@ def build_server(client: LexApiClient) -> MCPServer:
                 idempotency_key=idempotency_key,
             )
         )
+
+    @server.tool(annotations=READ_ONLY)
+    def list_legal_norms(
+        jurisdiccion: Jurisdiccion,
+        materia: Annotated[str | None, Field(max_length=120)] = None,
+        page: Annotated[int, Field(ge=1)] = 1,
+        limit: Annotated[int, Field(ge=1, le=100)] = 20,
+        idempotency_key: IdempotencyKey = None,
+    ) -> dict[str, Any]:
+        """Lista el catálogo de normas disponibles y sus slugs, con paginación.
+
+        Son metadatos actuales del catálogo; para texto a una fecha usa las herramientas de lectura.
+        """
+        return fit_context(
+            call(
+                client.list_norms,
+                jurisdiction=jurisdiccion,
+                matter=materia,
+                page=page,
+                limit=limit,
+                idempotency_key=idempotency_key,
+            )
+        )
+
+    @server.tool(annotations=READ_ONLY)
+    def get_legal_norm(
+        norma: Annotated[str, Field(min_length=1, max_length=120)],
+        idempotency_key: IdempotencyKey = None,
+    ) -> dict[str, Any]:
+        """Obtiene metadatos actuales de una norma por slug; no representa su texto histórico."""
+        return fit_context(call(client.norm, norm=norma, idempotency_key=idempotency_key))
+
+    @server.tool(annotations=READ_ONLY)
+    def get_legal_article_history(
+        article_id: Annotated[str, Field(min_length=36, max_length=36)],
+        idempotency_key: IdempotencyKey = None,
+    ) -> dict[str, Any]:
+        """Consulta las versiones conservadas de un artículo con fuente, SHA y vigencia.
+
+        La historia es prospectiva desde el baseline; no completa periodos sin cobertura.
+        """
+        return fit_context(
+            call(client.article_history, article_id=article_id, idempotency_key=idempotency_key)
+        )
+
+    @server.tool(annotations=READ_ONLY)
+    def get_corpus_status() -> dict[str, Any]:
+        """Estado vivo del corpus y monitor, con fecha UTC y alcance declarado por la API."""
+        return fit_context(call(client.corpus_status))
 
     return server
 

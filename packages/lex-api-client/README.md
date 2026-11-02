@@ -53,11 +53,13 @@ La cuota mensual se comparte entre claves por cuenta y mes UTC. `monthly_quota_e
 indica cuándo se renueva; no se resuelve comprando créditos. Se mantienen límites de
 texto, resultados, tamaño y concurrencia.
 
-El MCP 0.4.0 añade `map_legal_topic(query, fecha, jurisdiccion)` y
-`get_legal_article(article_id, fecha)`; el mapa conserva un catálogo limitado de temas.
-El SDK añade `article(article_id, as_of=...)`. Las cinco lecturas aceptan
+El SDK 0.4.0 incluye `article`, `list_norms`, `norm`, `article_history` y
+`corpus_status`, además de búsqueda, estructura, resolve y mapa. El MCP expone
+las ocho lecturas normativas y el estado público del corpus; el mapa conserva
+un catálogo limitado de temas. Las ocho lecturas normativas aceptan
 `idempotency_key`: conserva identificador y parámetros para el mismo reintento;
 una petición distinta es otro evento. No se eliminan límites de ráfagas por reintentar.
+`corpus_status()` consulta el estado público y no consume cuota.
 
 Los contratos previos, saldos e historial se conservan. El catálogo activo informa
 la oferta gratuita y empresarial por volumen/garantías verificadas; sin precio ni

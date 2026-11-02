@@ -9,7 +9,7 @@ cuentas, en `https://lexapi.mx`. Usa esa URL en `LEX_API_BASE_URL`.
 - una clave con el scope de la operación: `resolve:run`, `map:read`,
   `norms:read`, `articles:read` o `billing:read`. Créala en
   [lexapi.mx/cuenta](https://lexapi.mx/cuenta) después de confirmar tu correo.
-  Las cuentas con lectura incluida tienen acceso a las cinco funciones de
+  Las cuentas con lectura incluida tienen acceso a todas las funciones de
   lectura; consulta los permisos y límites activos de tu cuenta;
 - `Idempotency-Key` estable por operación reintentable.
 

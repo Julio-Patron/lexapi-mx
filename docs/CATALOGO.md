@@ -395,5 +395,9 @@ Cuando un cliente prepago se queda sin saldo, la API responde `402` con el códi
 | `get_norm_structure` | `GET /api/v1/normas/{slug}/estructura` |
 | `map_legal_topic` | `POST /api/v1/map` |
 | `get_legal_article` | `GET /api/v1/articulos/{id}` |
+| `list_legal_norms` | `GET /api/v1/normas` |
+| `get_legal_norm` | `GET /api/v1/normas/{slug}` |
+| `get_legal_article_history` | `GET /api/v1/articulos/{id}/historial` |
+| `get_corpus_status` | `GET /api/v1/corpus/status` (estado público, sin consumo) |
 
 Instalación: [`MCP_QUICKSTART.md`](MCP_QUICKSTART.md).

@@ -90,6 +90,43 @@ class LexApiClient:
     def health(self) -> dict[str, Any]:
         return self._request("GET", "/health")
 
+    def corpus_status(self) -> dict[str, Any]:
+        """Estado vivo de cobertura y monitor; conserva la fecha UTC de la API."""
+        return self._request("GET", "/api/v1/corpus/status")
+
+    def list_norms(
+        self,
+        *,
+        matter: str | None = None,
+        jurisdiction: str = "federal",
+        page: int = 1,
+        limit: int = 20,
+        idempotency_key: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {"jurisdiccion": jurisdiction, "page": page, "limit": limit}
+        if matter is not None:
+            params["materia"] = matter
+        return self._request(
+            "GET", "/api/v1/normas", params=params, idempotency_key=idempotency_key
+        )
+
+    def norm(self, norm: str, *, idempotency_key: str | None = None) -> dict[str, Any]:
+        if not norm.strip():
+            raise ValueError("norm is required")
+        return self._request(
+            "GET", f"/api/v1/normas/{quote(norm.strip(), safe='')}", idempotency_key=idempotency_key
+        )
+
+    def article_history(
+        self, article_id: str, *, idempotency_key: str | None = None
+    ) -> dict[str, Any]:
+        """Versiones conservadas; no implica cobertura anterior al baseline."""
+        return self._request(
+            "GET",
+            f"/api/v1/articulos/{quote(article_id, safe='')}/historial",
+            idempotency_key=idempotency_key,
+        )
+
     def resolve(
         self,
         *,

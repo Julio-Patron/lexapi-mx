@@ -59,8 +59,9 @@ Claude Desktop o Cursor (`claude_desktop_config.json`, `.cursor/mcp.json`):
 }
 ```
 
-El adaptador 0.4.0 incorpora cinco herramientas: `resolve_legal_citation`,
-`search_mexican_law`, `get_norm_structure`, `map_legal_topic` y `get_legal_article`. Guía completa:
+El adaptador 0.4.0 incorpora nueve herramientas: `resolve_legal_citation`,
+`search_mexican_law`, `get_norm_structure`, `map_legal_topic`, `get_legal_article`,
+`list_legal_norms`, `get_legal_norm`, `get_legal_article_history` y `get_corpus_status`. Guía completa:
 [`docs/MCP_QUICKSTART.md`](docs/MCP_QUICKSTART.md).
 
 **3. O llama a la API directamente.**
