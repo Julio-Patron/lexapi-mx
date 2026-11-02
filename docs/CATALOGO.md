@@ -6,14 +6,14 @@ Corte: **2026-11-02**. Las cifras corresponden a esa fecha; el estado vigente ho
 
 | Concepto | Total |
 |---|---|
-| Ordenamientos federales | 299 |
-| Artículos vigentes | 42,210 |
-| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 135,546 |
+| Ordenamientos federales | 300 |
+| Artículos vigentes | 42,247 |
+| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 135,680 |
 | Disposiciones con fuente oficial y checksum SHA-256 | 100% |
 
 Jurisdicción: **federal**. Las normas estatales y municipales no están incluidas.
 
-Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 134,247 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
+Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 134,381 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
 
 Última reforma incorporada: Constitución, DOF 2026-10-07 (nacionalidad única para titulares de los Ejecutivos federal y locales; artículos 82, 116 y 122), vigente desde el 2026-10-08.
 
@@ -47,7 +47,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `CNPP` | `cnpp` | Código Nacional de Procedimientos Penales |
 | `CPF` | `cpf` | Código Penal Federal |
 
-## Leyes (200)
+## Leyes (201)
 
 | Clave | Slug | Nombre oficial |
 |---|---|---|
@@ -251,6 +251,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `LRFV76` | `lrfv76` | LEY Reglamentaria de la Fracción V del Artículo 76 de la Constitución General de la República |
 | `LSATIME` | `lsatime` | LEY Sobre la Aprobación de Tratados Internacionales en Materia Económica |
 | `LRPCAP` | `lrpcap` | LEY sobre Refugiados, Protección Complementaria y Asilo Político (Antes "Ley sobre Refugiados y Protección Complementaria" ) |
+| `LOUAM` | `louam` | LEY Orgánica de la Universidad Autónoma Metropolitana |
 
 ## Reglamentos (89)
 
