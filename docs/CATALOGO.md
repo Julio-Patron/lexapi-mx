@@ -1,19 +1,19 @@
 # Catálogo de Lex API MX
 
-Corte: **2026-10-30**. Las cifras corresponden a esa fecha; el estado vigente hoy se consulta en `GET /api/v1/corpus/status`.
+Corte: **2026-11-02**. Las cifras corresponden a esa fecha; el estado vigente hoy se consulta en `GET /api/v1/corpus/status`.
 
 ## Cobertura
 
 | Concepto | Total |
 |---|---|
-| Ordenamientos federales | 204 |
-| Artículos vigentes | 37,153 |
-| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 116,749 |
+| Ordenamientos federales | 207 |
+| Artículos vigentes | 37,286 |
+| Disposiciones vigentes (artículos, fracciones, incisos, capítulos y demás) | 117,176 |
 | Disposiciones con fuente oficial y checksum SHA-256 | 100% |
 
 Jurisdicción: **federal**. Las normas estatales y municipales no están incluidas.
 
-Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 115,450 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
+Fuentes oficiales del texto: Cámara de Diputados (`diputados.gob.mx`, 115,877 disposiciones), Diario Oficial de la Federación (`dof.gob.mx`, 321), STPS (`siaat.stps.gob.mx`, 840) y el Tribunal de Justicia Administrativa de la CDMX (`tjacdmx.gob.mx`, 138).
 
 Última reforma incorporada: Constitución, DOF 2026-10-07 (nacionalidad única para titulares de los Ejecutivos federal y locales; artículos 82, 116 y 122), vigente desde el 2026-10-08.
 
@@ -47,7 +47,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `CNPP` | `cnpp` | Código Nacional de Procedimientos Penales |
 | `CPF` | `cpf` | Código Penal Federal |
 
-## Leyes (122)
+## Leyes (125)
 
 | Clave | Slug | Nombre oficial |
 |---|---|---|
@@ -65,11 +65,13 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `LCM` | `lcm` | Ley de Concursos Mercantiles |
 | `LCF` | `lcf` | Ley de Coordinación Fiscal |
 | `LDRS` | `ldrs` | LEY de Desarrollo Rural Sustentable |
+| `LDSC` | `ldsc` | LEY de Desarrollo Sustentable de la Cafeticultura |
 | `LDFEFM` | `ldfefm` | Ley de Disciplina Financiera de las Entidades Federativas y los Municipios |
 | `LECampo` | `lecampo` | LEY de Energía para el Campo |
 | `LFEA` | `lfea` | Ley de Firma Electrónica Avanzada |
 | `LFRCF` | `lfrcf` | Ley de Fiscalización y Rendición de Cuentas de la Federación |
 | `LFCC` | `lfcc` | Ley de Fomento a la Confianza Ciudadana |
+| `LFIV` | `lfiv` | LEY de Fomento a la Industria Vitivinícola |
 | `LFAAR` | `lfaar` | Ley de Fondos de Aseguramiento Agropecuario y Rural |
 | `LFI` | `lfi` | Ley de Fondos de Inversión |
 | `LICAL` | `lical` | Ley de Infraestructura de la Calidad |
@@ -117,6 +119,7 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `LFPCA` | `lfpca` | Ley Federal de Procedimiento Contencioso Administrativo |
 | `LFPCCS` | `lfpccs` | LEY Federal de Producción, Certificación y Comercio de Semillas |
 | `LFPPI` | `lfppi` | Ley Federal de Protección a la Propiedad Industrial |
+| `LFFPMN` | `lffpmn` | LEY Federal para el Fomento y Protección del Maíz Nativo |
 | `LFPC` | `lfpc` | Ley Federal de Protección al Consumidor |
 | `LFPDPPP` | `lfpdppp` | Ley Federal de Protección de Datos Personales en Posesión de los Particulares |
 | `LFREMSP` | `lfremsp` | Ley Federal de Remuneraciones de los Servidores Públicos |
