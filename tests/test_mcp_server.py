@@ -32,6 +32,8 @@ def test_tools_require_date_and_jurisdiction():
         "search_mexican_law",
         "get_norm_structure",
         "resolve_legal_citation",
+        "map_legal_topic",
+        "get_legal_article",
     }
     assert set(tools["search_mexican_law"].input_schema["required"]) == {
         "query",
@@ -142,7 +144,7 @@ def test_invalid_date_or_jurisdiction_never_reaches_api(arguments):
 @pytest.mark.parametrize(
     ("status", "body", "expected"),
     [
-        (402, {"detail": "Insufficient credits"}, "lexapi.mx/dashboard"),
+        (402, {"detail": "Insufficient credits"}, "lexapi.mx/cuenta"),
         (
             402,
             {"detail": {"code": "insufficient_credits", "message": "Saldo agotado: recarga."}},

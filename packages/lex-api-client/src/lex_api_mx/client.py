@@ -146,6 +146,7 @@ class LexApiClient:
         jurisdiction: str | None = None,
         as_of: date | str | None = None,
         limit: int = 20,
+        idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         params: dict[str, Any] = {"q": query, "limit": limit}
         if norm is not None:
@@ -156,7 +157,9 @@ class LexApiClient:
             params["jurisdiccion"] = jurisdiction
         if as_of is not None:
             params["fecha"] = as_of.isoformat() if isinstance(as_of, date) else as_of
-        return self._request("GET", "/api/v1/articulos/search", params=params)
+        return self._request(
+            "GET", "/api/v1/articulos/search", params=params, idempotency_key=idempotency_key
+        )
 
     def norm_structure(
         self,
@@ -166,10 +169,11 @@ class LexApiClient:
         include_text: bool = False,
         page: int = 1,
         page_size: int | None = None,
+        idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         """Árbol de la norma; `include_text=True` agrega el texto de una página de nodos
-        (`page`, `page_size`; la respuesta trae `text_page.has_more`) y requiere un plan
-        de la API (403 en el plan gratuito)."""
+        (`page`, `page_size`; la respuesta trae `text_page.has_more`). La política
+        activa de la cuenta controla permisos, cuota y límites de texto."""
         if not norm.strip():
             raise ValueError("norm is required")
         params: dict[str, Any] = {"include_text": str(include_text).lower()}
@@ -183,6 +187,24 @@ class LexApiClient:
             "GET",
             f"/api/v1/normas/{quote(norm.strip(), safe='')}/estructura",
             params=params,
+            idempotency_key=idempotency_key,
+        )
+
+    def article(
+        self,
+        article_id: str,
+        *,
+        as_of: date | str | None = None,
+        idempotency_key: str | None = None,
+    ) -> dict[str, Any]:
+        params = (
+            {"fecha": as_of.isoformat() if isinstance(as_of, date) else as_of} if as_of else None
+        )
+        return self._request(
+            "GET",
+            f"/api/v1/articulos/{quote(article_id, safe='')}",
+            params=params,
+            idempotency_key=idempotency_key,
         )
 
     def _request(

@@ -8,30 +8,42 @@
 
 ## Autenticación y uso
 
-- Todas las rutas `/api/v1/*` exigen la cabecera `X-API-Key` con una clave creada
-  en [lexapi.mx/cuenta](https://lexapi.mx/cuenta). Cada operación valida su
-  scope: `norms:read`, `articles:read`, `resolve:run`, `billing:read` y, en los
-  planes de la API, `map:read`.
-- Solo se cobran respuestas `2xx` con resultado, en créditos por operación
-  ([`CATALOGO.md`](CATALOGO.md)): una búsqueda sin artículos responde `200` con
-  `data: []` y la cabecera `X-Normative-Metering: skipped`, sin cargo, igual que
-  un paquete de `POST /resolve` sin items. Un reintento con la misma
-  `Idempotency-Key` y la misma petición no se cobra dos veces.
-- Sin saldo la API responde `402` con `code: insufficient_credits` y el enlace
-  para contratar; una operación de los planes de la API (mapa normativo, texto
-  completo de una norma) con una clave del plan gratuito responde `403` con
-  `code: paid_plan_required`, `message` y `upgrade_url`; sin otro scope, `403`
-  con un texto plano; por encima del límite de peticiones, `429` con
-  `Retry-After`. Límites: plan gratuito, 10 peticiones por minuto y 200 por día
-  (UTC) por cuenta, sumando todas sus claves, y hasta 2 claves activas; planes de
-  la API, 120 por minuto por clave en normas y artículos, 60 en `resolve` y `map`,
-  y hasta 10 claves. Los límites vigentes de cada plan los publica la API:
-  `GET /api/v1/checkout/catalog` (campo `limits` de cada plan, sin clave) y
-  `GET /api/v1/account` (`plan.limits`, con la sesión de la cuenta), con
-  `max_active_keys`, `requests_per_minute`, `requests_per_minute_map_resolve`,
-  `requests_per_day` (`null` en los planes de la API), `requests_scope`
-  (`account` o `key`) y `search_results`. Cada respuesta lleva `X-Request-ID`
-  para soporte.
+- Las lecturas normativas exigen API key de una cuenta con correo confirmado y
+  permisos por operación: `norms:read`, `articles:read`, `resolve:run`, `map:read`.
+  `/corpus/status` y `/checkout/catalog` son públicos; `/account/*` usa sesión.
+- API y MCP comparten cuenta, permisos y consumo. La política activa se consulta
+  en `GET /checkout/catalog` y `GET /account`: `reading_included` indica la oferta
+  pública activa y `account.reading` la cuota asignada a esa cuenta. La activación
+  de lectura incluida conserva condiciones, saldos, ledger e historial previos.
+- Con lectura incluida, un 2xx con resultado consume una consulta mensual por
+  cuenta en el mes calendario UTC. Artículos completos, estructura, búsqueda FTS,
+  resolve y mapa respetan la misma cobertura. No exige saldo ni compra de créditos.
+  Vacíos, `not_found`, fuera de cobertura y errores no consumen cuota mensual.
+  Los contratos anteriores que sigan activos conservan su medición en créditos.
+- `Idempotency-Key` y la misma petición (método, ruta, query y cuerpo) no duplican
+  el evento mensual. Otro contenido es otro evento. `X-Request-ID` sirve para
+  soporte y no sustituye idempotencia. Los reintentos cuentan para ráfagas y texto.
+- Los límites configurables salen de `limits`: peticiones por minuto por cuenta,
+  `monthly_queries`, `monthly_period: calendar_utc`, `concurrent_requests`,
+  `search_results`, `response_bytes`, `text_nodes_per_day` y `max_active_keys`.
+  El gratuito no es extracción ilimitada. Los valores solo se publican cuando la
+  política aprobada está activa; este contrato no fija los candidatos de capacidad.
+- Agotamiento: `429 monthly_quota_exceeded` incluye `limit`, `resets_at` y
+  `Retry-After`; no se soluciona comprando créditos. Otros 429 distinguen
+  `rate_limit_exceeded`, `concurrency_limit_exceeded` y `text_quota_exceeded`.
+  `413 response_too_large` requiere reducir resultados/página. Una falla de
+  autoridad devuelve `503 quota_unavailable`; un timeout o lease vencido requiere
+  reintentar con la misma Idempotency-Key. Ninguna entrega incluida queda autorizada
+  por un contador local en memoria.
+- Cada éxito incluido trae `X-Reading-Quota-Limit`, `X-Reading-Quota-Remaining`,
+  `X-Reading-Quota-Period`, además del identificador del evento. Las respuestas son
+  privadas, incluso si reutilizan contenido: autorización y cuota se aplican en
+  cada hit. `X-Corpus-Revision` identifica contenido y esquema; `latest_version_from`
+  en `/corpus/status` sigue siendo una fecha de vigencia, no una revisión única.
+- El 402 `insufficient_credits` corresponde a condiciones de prepago anteriores
+  que exigen saldo. Un 403 indica falta de permisos; `paid_plan_required` puede
+  aparecer en cuentas que aún conservan el acceso anterior. La oferta empresarial
+  es por cotización de volumen y garantías verificadas, sin precio ni SLA por defecto.
 - Entradas inválidas: en la búsqueda, una `q` vacía o fuera de 2 a 500
   caracteres responde `422` con `code: invalid_query`; un slug de norma
   desconocido responde `404` con `code: norm_not_found` y un alias bloqueado,
@@ -75,7 +87,7 @@ en las demás normas.
 - `GET /articulos/search`, `GET /articulos/{id}`, `GET /articulos/{id}/historial`
 - `POST /resolve` — paquete normativo v1
   ([contrato](NORMATIVE_PACKAGE_CONTRACT.md))
-- `POST /map` — mapa normativo (planes de la API)
+- `POST /map` — mapa normativo (scope `map:read`)
 - `GET /billing/plans`, `GET /billing/summary`, `GET /billing/ledger`
 - `GET /corpus/status` — cifras del corpus y última revisión de las fuentes (sin clave ni cobro)
 
@@ -213,10 +225,9 @@ El contrato completo está en [`NORMATIVE_PACKAGE_CONTRACT.md`](NORMATIVE_PACKAG
 ## `POST /map`
 
 Mapa Normativo. Dado un tema, devuelve las normas aplicables, artículos relevantes, vigencia y fuente.
-Cuesta 2 créditos cuando detecta un tema; si no lo detecta responde `200` con
+Consume una consulta incluida con resultado (2 créditos en contratos anteriores); si no lo detecta responde `200` con
 `coverage_status: "not_found"`, la cabecera `X-Normative-Metering: skipped` y **no se
-cobra**. `query` admite de 2 a 2,000 caracteres. Requiere un plan de la API: con una clave
-del plan gratuito responde `403` con `code: paid_plan_required` y `upgrade_url`.
+cobra**. `query` admite de 2 a 2,000 caracteres. Requiere `map:read`, incluido en las claves estándar de cuentas con lectura incluida. Conserva el catálogo limitado de temas y sus advertencias.
 
 La detección compara la consulta con las palabras clave de cada tema del catálogo por
 lexemas en español, sin distinguir acentos, mayúsculas, singular o plural ("liquidaciones"
@@ -449,7 +460,7 @@ bloqueado responde `404` como `GET /normas/{slug}`.
 | Nombre | Tipo | Descripción |
 |--------|------|-------------|
 | fecha | date | Fecha de consulta (YYYY-MM-DD); hoy si se omite |
-| include_text | boolean | Incluir texto vigente (default false). Requiere un plan de la API (scope `map:read`); el plan gratuito recibe `403` con `code: paid_plan_required` |
+| include_text | boolean | Incluir texto vigente (default false). Disponible en lectura incluida; fuera de esa política conserva los permisos del contrato anterior |
 | page | integer | Página de texto cuando `include_text=true` (default 1) |
 | page_size | integer | Nodos con texto por página (default 200, máximo 500) |
 

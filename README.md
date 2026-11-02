@@ -37,9 +37,7 @@ presenta texto vigente como histórico.
 ## Empieza en cinco minutos
 
 **1. Crea tu cuenta** en [lexapi.mx/cuenta](https://lexapi.mx/cuenta): te
-enviamos un enlace al correo, sin contraseña ni tarjeta. El plan gratuito trae
-500 créditos al mes, hasta 2 claves activas y 10 peticiones por minuto; cada
-clave de API se muestra una sola vez.
+enviamos un enlace al correo, sin contraseña ni tarjeta. La clave se muestra una sola vez. Consulta en Cuenta los permisos y límites activos; API y MCP comparten consumo por cuenta.
 
 **2. Conecta tu agente (MCP).** Claude Code:
 
@@ -61,8 +59,8 @@ Claude Desktop o Cursor (`claude_desktop_config.json`, `.cursor/mcp.json`):
 }
 ```
 
-Tu agente obtiene tres herramientas: `resolve_legal_citation`,
-`search_mexican_law` y `get_norm_structure`. Guía completa:
+El adaptador 0.4.0 incorpora cinco herramientas: `resolve_legal_citation`,
+`search_mexican_law`, `get_norm_structure`, `map_legal_topic` y `get_legal_article`. Guía completa:
 [`docs/MCP_QUICKSTART.md`](docs/MCP_QUICKSTART.md).
 
 **3. O llama a la API directamente.**
@@ -84,35 +82,26 @@ Guía: [`docs/QUICKSTART.md`](docs/QUICKSTART.md) · Referencia:
 [`docs/API_SPEC.md`](docs/API_SPEC.md) · Contrato del paquete normativo:
 [`docs/NORMATIVE_PACKAGE_CONTRACT.md`](docs/NORMATIVE_PACKAGE_CONTRACT.md).
 
-## Operaciones y créditos
+## Acceso y oferta empresarial
 
-| Operación | Créditos |
-|---|---|
-| Resolver una cita o consulta (`POST /resolve`) | 1 |
-| Buscar artículos, obtener un artículo, su historial, la estructura de una norma | 1 |
-| Mapa normativo: qué leyes aplican a un caso (`POST /map`, planes de la API) | 2 |
+Las cuentas con lectura incluida pueden consultar artículos completos, estructura,
+búsqueda por términos, resolve y mapa, dentro de su cobertura actual. Se exige
+registro por correo confirmado y API key. La cuota mensual se comparte entre
+API, SDK y MCP, por cuenta y mes calendario UTC; no exige comprar créditos.
+Los valores activos se consultan en [Cuenta](https://lexapi.mx/cuenta) y
+`GET /api/v1/checkout/catalog`; se mantienen límites de resultados, tamaño,
+concurrencia y texto entregado. El acceso no implica extracción ilimitada.
 
-Solo se cobran respuestas exitosas con resultado: una búsqueda sin artículos o
-una fecha anterior al inicio de cobertura no se cobran, y un reintento con la
-misma `Idempotency-Key` y la misma petición no se cobra dos veces. El texto
-completo de una norma (`include_text`) y el mapa normativo están incluidos en
-los planes de la API.
+Solo consumen éxitos con resultado. Errores, vacíos y fuera de cobertura no
+consumen; un reintento con idéntica Idempotency-Key y petición no duplica cuota
+mensual, pero sí cuenta para ráfagas y texto. Al agotarse la cuota, 429
+`monthly_quota_exceeded` indica cuándo se renueva; no exige una recarga.
 
-## Planes
-
-| Plan | Incluye | Precio (MXN, IVA incluido) |
-|---|---|---|
-| Plan gratuito | 500 créditos al mes, API y servidor MCP, sin tarjeta; hasta 2 claves, 10 peticiones por minuto y 200 al día por cuenta, búsquedas de hasta 10 artículos | $0 |
-| API Inicial | 10,000 créditos al mes, mapa normativo y texto completo de normas; hasta 10 claves, 120 peticiones por minuto por clave, búsquedas de hasta 50 artículos | $499 al mes o $4,990 al año |
-| API Profesional | 50,000 créditos al mes, mapa normativo y texto completo de normas; hasta 10 claves, 120 peticiones por minuto por clave, búsquedas de hasta 50 artículos | $1,499 al mes o $14,990 al año |
-| Recarga | 1,000 créditos que no caducan | $100 |
-
-Contratación y recargas en [lexapi.mx/cuenta](https://lexapi.mx/cuenta). La
-factura CFDI 4.0 se emite desde tu cuenta en cuanto activemos la facturación
-electrónica; mientras, el pago queda registrado. Al superar un límite de uso la
-API responde `429` con `Retry-After`. ¿Volumen, condiciones o SLA a la medida?
-Escríbenos a
-[admin@lexapi.mx](mailto:admin@lexapi.mx).
+La oferta **Empresarial** se cotiza por volumen y garantías verificadas por
+escrito: [admin@lexapi.mx](mailto:admin@lexapi.mx). No hay precio ni SLA
+publicado; búsqueda semántica, alertas en tiempo real y CFDI automático operativo
+no se anuncian como disponibles. Los contratos anteriores conservan condiciones,
+saldos e historial. Consulta la política activa de tu cuenta antes de integrar.
 
 ## Qué hay en este repositorio
 
