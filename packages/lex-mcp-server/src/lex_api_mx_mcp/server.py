@@ -57,8 +57,8 @@ fuente oficial, el checksum SHA-256 y la vigencia de cada texto. Reglas de uso:
    artículos completos, estructura, FTS, resolve y mapa dentro de su cobertura.
    Respeta los límites de resultados, texto y concurrencia; no extraigas el corpus
    sin límite. Revisa la política activa de la cuenta.
-8. Saldo agotado (402): no reintentes; avisa al responsable de la cuenta con el
-   enlace de recarga que trae el error.
+8. Saldo anterior agotado (402): no reintentes; indica al responsable que revise
+   Cuenta para activar el acceso gratuito. No sugieras comprar créditos.
 9. Cuota mensual agotada (429 monthly_quota_exceeded): no reintentes en bucle;
    informa cuándo se renueva. No requiere comprar créditos. Para un reintento
    identificado conserva idempotency_key y todos los parámetros; la ráfaga sí cuenta.

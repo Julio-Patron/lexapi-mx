@@ -76,3 +76,7 @@ la cuota incluida cuando corresponde, el saldo anterior y los límites activos.
 
 El contrato está en [`openapi-v1.json`](openapi-v1.json) y la referencia
 interactiva en [lexapi.mx/docs/api](https://lexapi.mx/docs/api).
+
+La primera clave se entrega al entrar en Cuenta tras confirmar el correo. Cópiala
+en ese momento: no se vuelve a mostrar. La API y el MCP son gratuitos; no necesitas
+tarjeta ni recargas. Si tenías una cuenta anterior, activa allí la lectura gratuita.

@@ -993,6 +993,26 @@
         "title": "PackageRelationship",
         "type": "object"
       },
+      "ReadingEnrollmentRequest": {
+        "properties": {
+          "policy_code": {
+            "const": "free",
+            "title": "Policy Code",
+            "type": "string"
+          },
+          "policy_version": {
+            "const": 1,
+            "title": "Policy Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "policy_code",
+          "policy_version"
+        ],
+        "title": "ReadingEnrollmentRequest",
+        "type": "object"
+      },
       "ResolveCoverage": {
         "properties": {
           "as_of": {
@@ -1480,7 +1500,7 @@
   "info": {
     "description": "API mexicana de consulta normativa estructurada",
     "title": "Lex API MX",
-    "version": "0.4.0"
+    "version": "0.4.1"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -1742,6 +1762,54 @@
           }
         },
         "summary": "Create Key",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/keys/initial": {
+      "post": {
+        "description": "Return the first key once, including across concurrent tabs or API instances.",
+        "operationId": "create_initial_key",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Initial Key",
         "tags": [
           "account"
         ]
@@ -2091,6 +2159,64 @@
           }
         },
         "summary": "Create Portal",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/api/v1/account/reading/activate": {
+      "post": {
+        "description": "Enroll an existing free account after it accepts the published limits.",
+        "operationId": "activate_free_reading",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadingEnrollmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Activate Free Reading",
         "tags": [
           "account"
         ]
@@ -2460,7 +2586,7 @@
     },
     "/api/v1/checkout/catalog": {
       "get": {
-        "description": "Planes y recargas a la venta. Montos en centavos MXN con IVA incluido.\n\nCada plan trae `limits` (claves, peticiones y resultados por búsqueda) para que la\nweb y los integradores lean las cifras de la API en vez de copiarlas.",
+        "description": "Free API and MCP access and the limits enforced by the active policy.",
         "operationId": "get_catalog",
         "responses": {
           "200": {

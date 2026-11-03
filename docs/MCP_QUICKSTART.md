@@ -116,6 +116,6 @@ Las ocho lecturas normativas aceptan
 una petición distinta es otro evento. No se eliminan límites de ráfagas por reintentar.
 `get_corpus_status` consulta el estado público y no consume cuota.
 
-Los contratos previos, saldos e historial se conservan. El catálogo activo informa
-la oferta gratuita y empresarial por volumen/garantías verificadas; sin precio ni
-SLA por defecto, semántica, alertas en tiempo real ni CFDI automático operativo.
+La API y el MCP son gratuitos; no se venden planes ni recargas. Confirma tu
+correo y entra en Cuenta para recibir tu primera clave. Las cuentas anteriores
+pueden aceptar allí los límites gratuitos, conservando saldos e historial.

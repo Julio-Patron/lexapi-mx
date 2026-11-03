@@ -83,7 +83,7 @@ Guía: [`docs/QUICKSTART.md`](docs/QUICKSTART.md) · Referencia:
 [`docs/API_SPEC.md`](docs/API_SPEC.md) · Contrato del paquete normativo:
 [`docs/NORMATIVE_PACKAGE_CONTRACT.md`](docs/NORMATIVE_PACKAGE_CONTRACT.md).
 
-## Acceso y oferta empresarial
+## Acceso gratuito
 
 Las cuentas con lectura incluida pueden consultar artículos completos, estructura,
 búsqueda por términos, resolve y mapa, dentro de su cobertura actual. Se exige
@@ -98,11 +98,10 @@ consumen; un reintento con idéntica Idempotency-Key y petición no duplica cuot
 mensual, pero sí cuenta para ráfagas y texto. Al agotarse la cuota, 429
 `monthly_quota_exceeded` indica cuándo se renueva; no exige una recarga.
 
-La oferta **Empresarial** se cotiza por volumen y garantías verificadas por
-escrito: [admin@lexapi.mx](mailto:admin@lexapi.mx). No hay precio ni SLA
-publicado; búsqueda semántica, alertas en tiempo real y CFDI automático operativo
-no se anuncian como disponibles. Los contratos anteriores conservan condiciones,
-saldos e historial. Consulta la política activa de tu cuenta antes de integrar.
+La API y el MCP son gratuitos; no se venden planes ni recargas. Confirma tu
+correo y entra en [Cuenta](https://lexapi.mx/cuenta) para recibir tu primera
+clave, que se muestra una sola vez. Las cuentas anteriores pueden aceptar
+los límites gratuitos desde Cuenta; sus saldos e historial se conservan.
 
 ## Qué hay en este repositorio
 
