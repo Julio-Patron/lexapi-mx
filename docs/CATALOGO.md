@@ -347,18 +347,28 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `REG_LPPDDHP` | `reg_lppddhp` | REGLAMENTO de la Ley para la Protección de Personas Defensoras de Derechos Humanos y Periodistas |
 | `REG_LRMINERAS` | `reg_lrmineras` | REGLAMENTO de la Ley que Declara Reservas Mineras Nacionales los Yacimientos de Uranio, Torio y las demás Substancias de las cuales se Obtengan Isótopos Hendibles que puedan Producir Energía Nuclear |
 
-## Lectura incluida
+## Lectura gratuita
 
-La política activa se consulta en `/api/v1/checkout/catalog` y Cuenta. La lectura
-incluida abre artículos completos, estructura, FTS, resolve y mapa con correo
-confirmado y clave obligatoria. API/MCP comparten cuota por cuenta y mes UTC;
-solo consumen éxitos con resultado. No exige comprar créditos. Se conservan
-límites de resultados, concurrencia, respuesta y texto. Los valores candidatos
-no se publican antes de validar y activar la política.
+La API y el MCP son gratuitos, con correo confirmado y clave obligatoria. Al entrar
+en Cuenta por primera vez se entrega la clave; solo se muestra una vez. Las cuentas
+anteriores pueden aceptar los límites gratuitos conservando sus saldos e historial.
+No se venden planes, recargas ni acceso empresarial.
 
-Oferta empresarial única por cotización de volumen y garantías verificadas,
-sin precio público ni SLA disponible por defecto. Semántica, alertas en tiempo
-real y CFDI automático operativo no forman parte de la oferta disponible.
+| Límite compartido por cuenta entre API y MCP | Valor |
+|---|---|
+| Consultas exitosas con resultado por mes calendario UTC | 5,000 |
+| Peticiones por minuto | 50 |
+| Peticiones simultáneas | 4 |
+| Resultados por búsqueda | 10 |
+| Nodos de texto entregados por día | 10,000 |
+| Tamaño máximo por respuesta | 2 MiB |
+| Claves activas | 2 |
+
+La política activa se consulta en `/api/v1/checkout/catalog` y Cuenta. Abre artículos
+completos, estructura, búsqueda por términos, citas, historial y mapa. Vacíos, errores
+y fuera de cobertura no consumen cuota mensual. Los reintentos idénticos con
+`Idempotency-Key` no duplican la cuota mensual; sí cuentan para ráfagas y texto.
+Un límite agotado responde 429 con `Retry-After`; no exige comprar créditos.
 
 ## Operaciones de contratos anteriores y créditos
 
@@ -377,6 +387,9 @@ Solo se cobran respuestas exitosas (2xx) con resultado: una búsqueda sin artíc
 
 ## Condiciones conservadas de contratos anteriores
 
+Referencia histórica, sin contratación ni recargas disponibles. Las cuentas
+gratuitas anteriores pueden aceptar el acceso actual desde Cuenta.
+
 | Plan | Incluye | Precio (MXN, IVA incluido) |
 |---|---|---|
 | Gratis | 500 créditos por mes calendario (hora de la Ciudad de México), sin acumulación; API y servidor MCP; hasta 2 claves; 10 peticiones por minuto y 200 por día por cuenta; búsquedas de hasta 10 artículos; sin mapa normativo ni texto completo de normas | $0 |
@@ -384,7 +397,7 @@ Solo se cobran respuestas exitosas (2xx) con resultado: una búsqueda sin artíc
 | API Profesional | 50,000 créditos al mes; mapa normativo y texto completo de normas; hasta 10 claves; 120 peticiones por minuto por clave | $1,499 al mes o $14,990 al año |
 | Recarga | 1,000 créditos que no caducan | $100 |
 
-Cuando un cliente prepago se queda sin saldo, la API responde `402` con el código `insufficient_credits` y el enlace de recarga.
+Cuando un cliente prepago se queda sin saldo, la API responde `402` con el código `insufficient_credits` y un enlace a Cuenta para revisar su acceso.
 
 ## Servidor MCP
 

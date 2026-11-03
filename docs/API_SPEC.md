@@ -8,6 +8,20 @@
 
 ## Autenticación y uso
 
+El registro y acceso se realizan en [Cuenta](https://lexapi.mx/cuenta), con enlace
+al correo. Tras confirmarlo, la web solicita `POST /account/keys/initial`: devuelve
+`201` con `key: {id, api_key, key_prefix}` solo si la cuenta nunca tuvo una clave;
+las siguientes llamadas devuelven `200` con `key: null`, incluso con dos pestañas.
+Solo se almacena el hash; si se pierde la respuesta hay que revocar la clave y crear
+otra con `POST /account/keys`. Una clave revocada nunca se recrea automáticamente.
+
+Las cuentas nuevas reciben lectura gratuita. Las anteriores mantienen sus
+condiciones hasta aceptar los límites: `GET /account` devuelve `reading_offer`
+y `POST /account/reading/activate` recibe `{"policy_code":"free","policy_version":1}`.
+La aceptación es idempotente, conserva las mismas claves, términos, saldo e historial.
+No se venden planes, recargas ni acceso empresarial; `/account/checkout` devuelve
+`409 offer_retired`. Los registros y comprobantes anteriores siguen disponibles.
+
 - Las lecturas normativas exigen API key de una cuenta con correo confirmado y
   permisos por operación: `norms:read`, `articles:read`, `resolve:run`, `map:read`.
   `/corpus/status` y `/checkout/catalog` son públicos; `/account/*` usa sesión.
@@ -26,8 +40,9 @@
 - Los límites configurables salen de `limits`: peticiones por minuto por cuenta,
   `monthly_queries`, `monthly_period: calendar_utc`, `concurrent_requests`,
   `search_results`, `response_bytes`, `text_nodes_per_day` y `max_active_keys`.
-  El gratuito no es extracción ilimitada. Los valores solo se publican cuando la
-  política aprobada está activa; este contrato no fija los candidatos de capacidad.
+  El gratuito no es extracción ilimitada: 5,000 consultas/mes UTC, 50 RPM, cuatro
+  simultáneas, diez resultados, 10,000 nodos de texto/día, 2 MiB/respuesta y dos claves.
+  `reading_included` indica si el acceso está activo.
 - Agotamiento: `429 monthly_quota_exceeded` incluye `limit`, `resets_at` y
   `Retry-After`; no se soluciona comprando créditos. Otros 429 distinguen
   `rate_limit_exceeded`, `concurrency_limit_exceeded` y `text_quota_exceeded`.
@@ -42,8 +57,8 @@
   en `/corpus/status` sigue siendo una fecha de vigencia, no una revisión única.
 - El 402 `insufficient_credits` corresponde a condiciones de prepago anteriores
   que exigen saldo. Un 403 indica falta de permisos; `paid_plan_required` puede
-  aparecer en cuentas que aún conservan el acceso anterior. La oferta empresarial
-  es por cotización de volumen y garantías verificadas, sin precio ni SLA por defecto.
+  aparecer en cuentas que aún conservan el acceso anterior. Desde Cuenta pueden
+  activar la lectura gratuita. No se venden planes ni recargas.
 - Entradas inválidas: en la búsqueda, una `q` vacía o fuera de 2 a 500
   caracteres responde `422` con `code: invalid_query`; un slug de norma
   desconocido responde `404` con `code: norm_not_found` y un alias bloqueado,
