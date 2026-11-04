@@ -2606,7 +2606,7 @@
     },
     "/api/v1/corpus/status": {
       "get": {
-        "description": "Cifras vigentes del corpus y última revisión de las fuentes. Sin clave ni cobro.\n\n`norms`, `articles` y `provisions` son los ordenamientos, artículos y disposiciones\ncon texto oficial vigente en `as_of` (las mismas cifras que publica la web).\n`latest_version_from` es la vigencia más reciente entre las versiones oficiales\n(reformas o correcciones). `monitor` dice cuándo se revisaron por última vez los\ndocumentos oficiales, cuántos se vigilan (activos y en revisión) y cuántos\nobjetivos tienen cambios pendientes de revisión jurídica. Los eventos sin\nresolver siguen contando aunque la última sonda coincida con el baseline\no el objetivo esté pausado. La respuesta se calcula como mucho cada diez minutos.",
+        "description": "Cifras vigentes del corpus y última revisión de las fuentes. Sin clave ni cobro.\n\n`norms`, `articles` y `provisions` son los ordenamientos, artículos y disposiciones\ncon texto oficial vigente en `as_of` (las mismas cifras que publica la web).\n`latest_version_from` es la vigencia más reciente entre las versiones oficiales\n(reformas o correcciones). `monitor` dice cuándo se revisaron por última vez los\ndocumentos oficiales, cuántos se vigilan (activos y en revisión) y cuántos\nobjetivos tienen cambios pendientes de revisión jurídica. Los eventos sin\nresolver siguen contando aunque la última sonda coincida con el baseline\no el objetivo esté pausado. El monitor se refresca cada diez minutos; las cifras\nse recalculan cuando cambia el día UTC o la revisión del contenido.",
         "operationId": "get_corpus_status",
         "responses": {
           "200": {

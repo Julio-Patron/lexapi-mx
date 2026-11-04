@@ -360,8 +360,10 @@ un valor supuesto.
 
 ## `GET /corpus/status`
 
-Estado del corpus. No pide clave ni descuenta créditos; la respuesta se calcula como
-mucho cada diez minutos y lleva `Cache-Control: public, max-age=300`.
+Estado del corpus. No pide clave ni descuenta créditos. La información del monitor
+se conserva hasta diez minutos. Las cifras se conservan por día UTC y revisión
+del corpus, y se recalculan cuando cambia cualquiera de los dos. La respuesta
+lleva `Cache-Control: no-cache`.
 
 ### Respuesta
 
