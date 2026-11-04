@@ -201,7 +201,7 @@ def test_invalid_date_or_jurisdiction_never_reaches_api(arguments):
         (
             402,
             {"detail": {"code": "insufficient_credits", "message": "Saldo agotado: recarga."}},
-            "Saldo agotado: recarga.",
+            "active el acceso gratuito",
         ),
         (401, {"detail": "Invalid API Key"}, "LEX_API_MX_KEY"),
         (403, {"detail": "Missing required scope(s)"}, "no tiene el permiso requerido"),
@@ -214,7 +214,7 @@ def test_invalid_date_or_jurisdiction_never_reaches_api(arguments):
                     "upgrade_url": "https://lexapi.mx/dashboard",
                 }
             },
-            "Contrata uno",
+            "incluye mapa y estructura con texto",
         ),
         (429, {"detail": "Too many requests"}, "Límite de peticiones"),
     ],
@@ -222,12 +222,15 @@ def test_invalid_date_or_jurisdiction_never_reaches_api(arguments):
 def test_api_errors_become_readable_tool_errors(status, body, expected):
     server = _build(lambda request: httpx.Response(status, json=body))
 
-    with pytest.raises(ToolError, match=expected):
+    with pytest.raises(ToolError, match=expected) as caught:
         _call(
             server,
             "search_mexican_law",
             {"query": "aguinaldo", "fecha": "vigente", "jurisdiccion": "federal"},
         )
+    if status in {402, 403}:
+        assert "recarga" not in str(caught.value).lower()
+        assert "contrata" not in str(caught.value).lower()
 
 
 def test_network_failure_becomes_readable_tool_error():
@@ -513,7 +516,7 @@ def test_oversized_search_result_asks_to_narrow_the_query():
                 }
             },
             {},
-            "No reintentes: avisa al responsable .* en https://lexapi.mx/dashboard",
+            "No reintentes: avisa al responsable .* en https://lexapi.mx/cuenta",
         ),
         (429, {"detail": "Too many requests."}, {"Retry-After": "7200"}, "unas 2 horas"),
         (429, {"detail": "Too many requests."}, {"Retry-After": "45"}, "Reintenta en 45 segundos"),

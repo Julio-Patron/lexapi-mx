@@ -347,6 +347,21 @@ El catálogo vivo se consulta con `GET /api/v1/normas` (scope `norms:read`).
 | `REG_LPPDDHP` | `reg_lppddhp` | REGLAMENTO de la Ley para la Protección de Personas Defensoras de Derechos Humanos y Periodistas |
 | `REG_LRMINERAS` | `reg_lrmineras` | REGLAMENTO de la Ley que Declara Reservas Mineras Nacionales los Yacimientos de Uranio, Torio y las demás Substancias de las cuales se Obtengan Isótopos Hendibles que puedan Producir Energía Nuclear |
 
+## Mapa normativo: alcance del catálogo
+
+Corte específico del mapa: **2026-11-04 (UTC)**. El catálogo tiene 12 temas
+y 13 normas vinculadas. Solo tres temas cuentan con citas configuradas:
+aguinaldo (una), despido y rescisión laboral (dos), y protección de datos
+personales (ocho). Los otros nueve temas conservan vínculos a normas, sin citas
+configuradas. Estas cifras describen el catálogo, no acreditan que cada cita
+esté disponible en todas las fechas.
+
+El mapa está incluido en el acceso gratuito de API y MCP. Devuelve las referencias
+de ese catálogo; no identifica de forma exhaustiva el marco aplicable a un caso
+ni cubre todas las normas publicadas. Revisar `coverage`, `articles_missing` y
+`warnings`. Sin tema detectado (`not_found`) no consume cuota. La búsqueda y
+`resolve` permiten consultar el resto del corpus dentro de su cobertura temporal.
+
 ## Lectura gratuita
 
 La API y el MCP son gratuitos, con correo confirmado y clave obligatoria. Al entrar

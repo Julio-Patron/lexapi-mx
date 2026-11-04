@@ -161,24 +161,19 @@ def describe_api_error(error: LexApiError) -> str:
     code = detail.get("code")
     message = _sentence(str(detail.get("message") or error.detail))
     if error.status_code == 402:
-        if not detail.get("message"):
-            message = (
-                "Saldo del contrato de créditos agotado. Consulta las condiciones de la cuenta en "
-                f"{DASHBOARD_URL}."
-            )
-        url = str(detail.get("top_up_url") or DASHBOARD_URL)
-        link = "" if url in message else f" en {url}"
         return (
-            f"{message} No reintentes: avisa al responsable de la cuenta que el saldo de "
-            f"Lex API MX se agotó para que recargue{link}."
+            "Saldo de las condiciones anteriores agotado. No reintentes: avisa al responsable "
+            "de la cuenta para que revise sus condiciones y, si lo desea, active el acceso "
+            f"gratuito en {DASHBOARD_URL}. Se conservan el saldo y el historial anteriores."
         )
     if error.status_code == 401:
         return "LEX_API_MX_KEY no es válida, expiró o fue revocada."
     if error.status_code == 403:
         if code == "paid_plan_required":
             return (
-                f"{message} Con el plan gratuito, lee los artículos con "
-                "resolve_legal_citation o search_mexican_law."
+                "Esta operación no está habilitada en las condiciones anteriores de la cuenta. "
+                f"Revisa los permisos en {DASHBOARD_URL}; su responsable puede activar allí "
+                "voluntariamente el acceso gratuito, que incluye mapa y estructura con texto."
             )
         return f"La API key no tiene el permiso requerido para esta operación: {error.detail}"
     if error.status_code == 404:
