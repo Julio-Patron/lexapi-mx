@@ -1500,7 +1500,7 @@
   "info": {
     "description": "API mexicana de consulta normativa estructurada",
     "title": "Lex API MX",
-    "version": "0.4.1"
+    "version": "0.4.2"
   },
   "openapi": "3.1.0",
   "paths": {

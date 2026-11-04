@@ -59,7 +59,7 @@ Claude Desktop o Cursor (`claude_desktop_config.json`, `.cursor/mcp.json`):
 }
 ```
 
-El adaptador 0.4.0 incorpora nueve herramientas: `resolve_legal_citation`,
+El adaptador incorpora nueve herramientas: `resolve_legal_citation`,
 `search_mexican_law`, `get_norm_structure`, `map_legal_topic`, `get_legal_article`,
 `list_legal_norms`, `get_legal_norm`, `get_legal_article_history` y `get_corpus_status`. Guía completa:
 [`docs/MCP_QUICKSTART.md`](docs/MCP_QUICKSTART.md).
@@ -82,6 +82,12 @@ with LexApiClient(base_url="https://api.lexapi.mx", api_key="tu_clave") as clien
 Guía: [`docs/QUICKSTART.md`](docs/QUICKSTART.md) · Referencia:
 [`docs/API_SPEC.md`](docs/API_SPEC.md) · Contrato del paquete normativo:
 [`docs/NORMATIVE_PACKAGE_CONTRACT.md`](docs/NORMATIVE_PACKAGE_CONTRACT.md).
+
+El mapa está incluido en API y MCP y consulta un catálogo limitado de temas y
+citas. No determina de forma exhaustiva el marco aplicable a un caso ni cubre
+todas las normas publicadas. Consulta el
+[alcance del catálogo](docs/CATALOGO.md#mapa-normativo-alcance-del-catálogo) y revisa
+`coverage`, `articles_missing` y `warnings` en cada respuesta.
 
 ## Acceso gratuito
 

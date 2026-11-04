@@ -44,7 +44,7 @@ with LexApiClient(base_url=base_url, api_key=api_key) as client:
     package = client.resolve(query="Artículo 1 LCM", norm="lcm")
 ```
 
-El SDK 0.4.0 cubre `resolve`, `map`, `search_articles`, `norm_structure` y `article`. Los
+El SDK cubre `resolve`, `map`, `search_articles`, `norm_structure` y `article`. Los
 errores HTTP levantan `LexApiError` con código de estado y `X-Request-ID`
 cuando está disponible; `402` significa saldo insuficiente en un contrato de
 prepago que exige saldo. La cuota incluida no depende de comprar créditos.

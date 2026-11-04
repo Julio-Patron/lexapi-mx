@@ -239,7 +239,11 @@ El contrato completo está en [`NORMATIVE_PACKAGE_CONTRACT.md`](NORMATIVE_PACKAG
 
 ## `POST /map`
 
-Mapa Normativo. Dado un tema, devuelve las normas aplicables, artículos relevantes, vigencia y fuente.
+Mapa normativo. Consulta un catálogo limitado de temas, normas vinculadas y citas
+configuradas, con vigencia y fuente. No determina de forma exhaustiva el marco
+aplicable a un caso. El [corte del catálogo](CATALOGO.md#mapa-normativo-alcance-del-catálogo)
+describe los temas y las citas disponibles; revisa `coverage`, `articles_missing`
+y `warnings` en cada respuesta.
 Consume una consulta incluida con resultado (2 créditos en contratos anteriores); si no lo detecta responde `200` con
 `coverage_status: "not_found"`, la cabecera `X-Normative-Metering: skipped` y **no se
 cobra**. `query` admite de 2 a 2,000 caracteres. Requiere `map:read`, incluido en las claves estándar de cuentas con lectura incluida. Conserva el catálogo limitado de temas y sus advertencias.
@@ -598,12 +602,13 @@ por nombre corto de norma, orden del documento e identificador del artículo.
 | jurisdiccion | string | Filtro por jurisdicción |
 | norma | string | Filtrar por slug de norma (o alias histórico). Desconocido o bloqueado: `404` con `code: norm_not_found` o `norm_blocked` |
 | fecha | date | Fecha de vigencia |
-| limit | integer | Resultados por búsqueda (default 10). Máximo 50 en los planes de la API y 10 en el plan gratuito: un valor mayor se recorta, no se rechaza. `meta.limit` dice cuántos se aplicaron |
+| limit | integer | Resultados por búsqueda (default 10). La lectura gratuita aplica el máximo de su política activa, actualmente 10. Los contratos anteriores conservan sus topes (hasta 50); un valor mayor se recorta, no se rechaza. `meta.limit` dice cuántos se aplicaron |
 
 ### Respuesta
 
-`meta` informa el tope aplicado y el costo: hoy una búsqueda cuesta 1 crédito con
-cualquier `limit`. Sin resultados, `data` llega vacío y la petición no se cobra
+`meta` informa el tope aplicado y la medición: una búsqueda con resultado consume
+una consulta gratuita, con `credits: 0`. Los contratos anteriores conservan el
+costo de 1 crédito con cualquier `limit`. Sin resultados, `data` llega vacío y la petición no se cobra
 (cabecera `X-Normative-Metering: skipped`).
 
 `meta.coverage` declara la cobertura en `as_of` (la `fecha` pedida o la de hoy) de

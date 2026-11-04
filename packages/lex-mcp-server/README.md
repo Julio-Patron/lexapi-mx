@@ -19,9 +19,16 @@ compacto (el árbol completo de la Ley Federal del Trabajo pesa más de 1 MB; su
 | `resolve_legal_citation` | `POST /api/v1/resolve` | Resolver una cita o situación a un paquete normativo verificable. |
 | `search_mexican_law` | `GET /api/v1/articulos/search` | Buscar artículos vigentes por texto, norma o materia. |
 | `get_norm_structure` | `GET /api/v1/normas/{slug}/estructura` | Índice de una norma: primer y último artículo, divisiones en orden y números de artículo. El texto (`include_text`, por páginas de nodos con `page`) se rige por los permisos y la cuota de la cuenta. |
+| `map_legal_topic` | `POST /api/v1/map` | Citas del catálogo limitado de temas, con cobertura y advertencias. |
+| `get_legal_article` | `GET /api/v1/articulos/{id}` | Artículo completo por UUID, con fuente, vigencia y SHA. |
+| `list_legal_norms` | `GET /api/v1/normas` | Catálogo paginado de normas y sus slugs. |
+| `get_legal_norm` | `GET /api/v1/normas/{slug}` | Metadatos actuales de una norma. |
+| `get_legal_article_history` | `GET /api/v1/articulos/{id}/historial` | Versiones conservadas con fuente, vigencia y SHA. |
+| `get_corpus_status` | `GET /api/v1/corpus/status` | Estado público del corpus; no consume cuota. |
 
-Todas exigen `fecha` (`"vigente"` o `YYYY-MM-DD`). Las de búsqueda y resolución
-exigen además `jurisdiccion`; hoy la única cobertura es `"federal"`.
+Las lecturas de texto exigen `fecha` (`"vigente"` o `YYYY-MM-DD`). Búsqueda,
+resolución, mapa y catálogo reciben `jurisdiccion`, hoy solo `"federal"`.
+Las lecturas de metadatos, historial y estado no reciben fecha.
 
 ## Instalación
 
@@ -62,8 +69,8 @@ trabajo sin responsabilidad para el patrón? Cita el artículo exacto.*
 
 Los errores de la API llegan al modelo como errores de herramienta legibles y
 con la acción para la siguiente llamada: clave inválida (401), permiso faltante
-o plan requerido (403), saldo agotado (402: no reintentar y avisar al
-responsable de la cuenta con el enlace de recarga), norma inexistente o fecha
+o condiciones anteriores (403), saldo anterior agotado (402: no reintentar y avisar
+al responsable para revisar y activar voluntariamente acceso gratuito en Cuenta), norma inexistente o fecha
 anterior a la cobertura (404: qué slug o qué fecha usar) y límite de peticiones
 (429). Ante un 429 con espera de 30 segundos o menos, el servidor reintenta solo
 hasta dos veces.
@@ -74,7 +81,7 @@ hasta dos veces.
 (licencia MIT). También está en el [MCP Registry](https://registry.modelcontextprotocol.io)
 como `io.github.Julio-Patron/lex-api-mx`.
 
-## Lectura incluida y versión 0.4.0
+## Lectura gratuita
 
 API y MCP requieren la misma clave de una cuenta con correo confirmado. La política
 activa de Cuenta determina cuota y permisos; la lectura incluida no exige créditos.
@@ -82,10 +89,12 @@ La cuota mensual se comparte entre claves por cuenta y mes UTC. `monthly_quota_e
 indica cuándo se renueva; no se resuelve comprando créditos. Se mantienen límites de
 texto, resultados, tamaño y concurrencia.
 
-El MCP 0.4.0 incluye búsqueda, estructura, resolve, `map_legal_topic`,
+El MCP incluye búsqueda, estructura, resolve, `map_legal_topic`,
 `get_legal_article`, `list_legal_norms`, `get_legal_norm`,
 `get_legal_article_history` y `get_corpus_status`.
-El mapa conserva un catálogo limitado de temas. Las ocho lecturas normativas aceptan
+El mapa conserva un catálogo limitado de temas y citas; no determina todo el marco
+aplicable a un caso. Revisa `coverage`, `articles_missing` y `warnings`.
+Las ocho lecturas normativas aceptan
 `idempotency_key`: conserva identificador y parámetros para el mismo reintento;
 una petición distinta es otro evento. No se eliminan límites de ráfagas por reintentar.
 `get_corpus_status` consulta el estado público y no consume cuota.
