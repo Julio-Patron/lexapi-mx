@@ -359,17 +359,20 @@ esté disponible en todas las fechas.
 El mapa está incluido en el acceso gratuito de API y MCP. Devuelve las referencias
 de ese catálogo; no identifica de forma exhaustiva el marco aplicable a un caso
 ni cubre todas las normas publicadas. Revisar `coverage`, `articles_missing` y
-`warnings`. Sin tema detectado (`not_found`) no consume cuota. La búsqueda y
-`resolve` permiten consultar el resto del corpus dentro de su cobertura temporal.
+`warnings`. Sin tema detectado (`not_found`) no contabiliza en los límites de uso.
+La búsqueda y `resolve` permiten consultar el resto del corpus dentro de su
+cobertura temporal.
 
-## Lectura gratuita
+## Acceso gratuito y límites de uso
 
-La API y el MCP son gratuitos, con correo confirmado y clave obligatoria. Al entrar
-en Cuenta por primera vez se entrega la clave; solo se muestra una vez. Las cuentas
-anteriores pueden aceptar los límites gratuitos conservando sus saldos e historial.
-No se venden planes, recargas ni acceso empresarial.
+La API y el MCP son 100 % gratuitos siempre, con correo confirmado y clave obligatoria.
+Al entrar en Cuenta por primera vez se entrega la clave; solo se muestra una vez.
+Los límites operativos existen únicamente para proteger la estabilidad del servicio
+frente a uso abusivo (extracción masiva o ciclos infinitos de agentes). Las cuentas
+anteriores pueden aceptar estos límites conservando sus saldos e historial. No se
+venden planes, cuotas comerciales, recargas ni acceso empresarial.
 
-| Límite compartido por cuenta entre API y MCP | Valor |
+| Límite de uso compartido por cuenta entre API y MCP | Valor |
 |---|---|
 | Consultas exitosas con resultado por mes calendario UTC | 5,000 |
 | Peticiones por minuto | 50 |
@@ -381,9 +384,10 @@ No se venden planes, recargas ni acceso empresarial.
 
 La política activa se consulta en `/api/v1/checkout/catalog` y Cuenta. Abre artículos
 completos, estructura, búsqueda por términos, citas, historial y mapa. Vacíos, errores
-y fuera de cobertura no consumen cuota mensual. Los reintentos idénticos con
-`Idempotency-Key` no duplican la cuota mensual; sí cuentan para ráfagas y texto.
-Un límite agotado responde 429 con `Retry-After`; no exige comprar créditos.
+y fuera de cobertura no contabilizan en el límite mensual de protección. Los reintentos
+idénticos con `Idempotency-Key` no duplican el conteo mensual; sí cuentan para ráfagas
+y texto diario. Un límite alcanzado responde 429 con `Retry-After`; no exige comprar
+créditos.
 
 ## Operaciones de contratos anteriores y créditos
 
@@ -426,6 +430,6 @@ Cuando un cliente prepago se queda sin saldo, la API responde `402` con el códi
 | `list_legal_norms` | `GET /api/v1/normas` |
 | `get_legal_norm` | `GET /api/v1/normas/{slug}` |
 | `get_legal_article_history` | `GET /api/v1/articulos/{id}/historial` |
-| `get_corpus_status` | `GET /api/v1/corpus/status` (estado público, sin consumo) |
+| `get_corpus_status` | `GET /api/v1/corpus/status` (estado público, fuera de límites por cuenta) |
 
 Instalación: [`MCP_QUICKSTART.md`](MCP_QUICKSTART.md).
