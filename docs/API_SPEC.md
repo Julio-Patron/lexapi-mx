@@ -22,9 +22,11 @@ La aceptación es idempotente, conserva las mismas claves, términos, saldo e hi
 No se venden planes, recargas ni acceso empresarial; `/account/checkout` devuelve
 `409 offer_retired`. Los registros y comprobantes anteriores siguen disponibles.
 
-- Las lecturas normativas exigen API key de una cuenta con correo confirmado y
-  permisos por operación: `norms:read`, `articles:read`, `resolve:run`, `map:read`.
-  `/corpus/status` y `/checkout/catalog` son públicos; `/account/*` usa sesión.
+- Las lecturas normativas exigen API key en la cabecera `X-API-Key` de una cuenta
+  con correo confirmado y permisos por operación: `norms:read`, `articles:read`,
+  `resolve:run`, `map:read`. `/corpus/status` y `/health` son públicos. Las rutas
+  internas de cuenta (`/account/*`) y compatibilidad histórica (`/billing/*`,
+  `/checkout/*`) no forman parte del contrato OpenAPI público.
 - API y MCP comparten cuenta, permisos y consumo. La política activa se consulta
   en `GET /checkout/catalog` y `GET /account`: `reading_included` indica la oferta
   pública activa y `account.reading` la cuota asignada a esa cuenta. La activación
@@ -103,33 +105,11 @@ en las demás normas.
 - `POST /resolve` — paquete normativo v1
   ([contrato](NORMATIVE_PACKAGE_CONTRACT.md))
 - `POST /map` — mapa normativo (scope `map:read`)
-- `GET /billing/plans`, `GET /billing/summary`, `GET /billing/ledger`
 - `GET /corpus/status` — cifras del corpus y última revisión de las fuentes (sin clave ni cobro)
 
-## Consumo
-
-Endpoints de solo lectura protegidos por el scope `billing:read`:
-
-### `GET /api/v1/billing/plans`
-
-Devuelve ofertas activas. `include_drafts=true` permite inspeccionar borradores a clientes autorizados durante configuración.
-
-### `GET /api/v1/billing/summary`
-
-Devuelve exclusivamente para el cliente autenticado:
-
-- plan y términos vigentes;
-- saldo y sobregiro;
-- eventos del mes;
-- eventos aún no valorizados;
-- cargos del mes;
-- alerta de saldo bajo.
-
-### `GET /api/v1/billing/ledger`
-
-Devuelve los movimientos recientes de la cuenta del cliente autenticado. Acepta `days` y `limit`.
-
-Los endpoints no permiten modificar términos, recargar saldo ni activar precios.
+Las rutas heredadas de consulta de contratos anteriores (`/billing/plans`,
+`/billing/summary`, `/billing/ledger`) se conservan únicamente en ejecución por
+compatibilidad histórica y no se publican en `openapi-v1.json`.
 
 ---
 
