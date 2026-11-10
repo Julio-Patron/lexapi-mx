@@ -58,7 +58,8 @@ y `warnings` lo explica. Los transitorios de los decretos de reforma (nodos
 por número: se leen con `GET /normas/{slug}/estructura`.
 
 Los números compuestos (`1390 Bis 1`, `195-Z-40`, `58-14`) se conservan tal
-cual en las citas.
+cual en las citas. La resolución distingue `19-1` de `191` y la letra `Ñ` de
+`N`; no se consideran citas heredadas ambiguas por normalizar esos caracteres.
 
 ## Artículo completo
 
