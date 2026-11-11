@@ -367,7 +367,7 @@ cobertura temporal.
 
 La API y el MCP son 100 % gratuitos siempre, con correo confirmado y clave obligatoria.
 Al entrar en Cuenta por primera vez se entrega la clave; solo se muestra una vez.
-Los límites operativos existen únicamente para proteger la estabilidad del servicio
+Los límites de uso (antiabuso) existen únicamente para proteger la estabilidad del servicio
 frente a uso abusivo (extracción masiva o ciclos infinitos de agentes). Las cuentas
 anteriores pueden aceptar estos límites conservando sus saldos e historial. No se
 venden planes, cuotas comerciales, recargas ni acceso empresarial.

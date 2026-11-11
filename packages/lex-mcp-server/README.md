@@ -18,13 +18,13 @@ compacto (el árbol completo de la Ley Federal del Trabajo pesa más de 1 MB; su
 |---|---|---|
 | `resolve_legal_citation` | `POST /api/v1/resolve` | Resolver una cita o situación a un paquete normativo verificable. |
 | `search_mexican_law` | `GET /api/v1/articulos/search` | Buscar artículos vigentes por texto, norma o materia. |
-| `get_norm_structure` | `GET /api/v1/normas/{slug}/estructura` | Índice de una norma: primer y último artículo, divisiones en orden y números de artículo. El texto (`include_text`, por páginas de nodos con `page`) se rige por los permisos y la cuota de la cuenta. |
+| `get_norm_structure` | `GET /api/v1/normas/{slug}/estructura` | Índice de una norma: primer y último artículo, divisiones en orden y números de artículo. El texto (`include_text`, por páginas de nodos con `page`) se rige por los permisos y los límites de uso de la cuenta. |
 | `map_legal_topic` | `POST /api/v1/map` | Citas del catálogo limitado de temas, con cobertura y advertencias. |
 | `get_legal_article` | `GET /api/v1/articulos/{id}` | Artículo completo por UUID, con fuente, vigencia y SHA. |
 | `list_legal_norms` | `GET /api/v1/normas` | Catálogo paginado de normas y sus slugs. |
 | `get_legal_norm` | `GET /api/v1/normas/{slug}` | Metadatos actuales de una norma. |
 | `get_legal_article_history` | `GET /api/v1/articulos/{id}/historial` | Versiones conservadas con fuente, vigencia y SHA. |
-| `get_corpus_status` | `GET /api/v1/corpus/status` | Estado público del corpus; no consume cuota. |
+| `get_corpus_status` | `GET /api/v1/corpus/status` | Estado público del corpus; no contabiliza contra los límites de uso. |
 
 Las lecturas de texto exigen `fecha` (`"vigente"` o `YYYY-MM-DD`). Búsqueda,
 resolución, mapa y catálogo reciben `jurisdiccion`, hoy solo `"federal"`.
@@ -32,9 +32,9 @@ Las lecturas de metadatos, historial y estado no reciben fecha.
 
 ## Instalación
 
-Requiere [uv](https://docs.astral.sh/uv/) y una clave de Lex API MX. El plan
-gratuito publica sus límites vigentes en Cuenta: crea tu cuenta con tu correo y genera la
-clave en [lexapi.mx/cuenta](https://lexapi.mx/cuenta).
+Requiere [uv](https://docs.astral.sh/uv/) y una clave de Lex API MX. API y MCP son
+siempre gratuitos y comparten los límites de uso por cuenta. Confirma tu correo
+y genera tu clave en [lexapi.mx/cuenta](https://lexapi.mx/cuenta).
 
 ```json
 {
@@ -84,8 +84,8 @@ como `io.github.Julio-Patron/lex-api-mx`.
 ## Lectura gratuita
 
 API y MCP requieren la misma clave de una cuenta con correo confirmado. La política
-activa de Cuenta determina cuota y permisos; la lectura incluida no exige créditos.
-La cuota mensual se comparte entre claves por cuenta y mes UTC. `monthly_quota_exceeded`
+activa de Cuenta determina límites de uso y permisos; la lectura no exige créditos.
+El límite mensual se comparte entre claves por cuenta y mes UTC. `monthly_quota_exceeded`
 indica cuándo se renueva; no se resuelve comprando créditos. Se mantienen límites de
 texto, resultados, tamaño y concurrencia.
 
@@ -97,7 +97,7 @@ aplicable a un caso. Revisa `coverage`, `articles_missing` y `warnings`.
 Las ocho lecturas normativas aceptan
 `idempotency_key`: conserva identificador y parámetros para el mismo reintento;
 una petición distinta es otro evento. No se eliminan límites de ráfagas por reintentar.
-`get_corpus_status` consulta el estado público y no consume cuota.
+`get_corpus_status` consulta el estado público y no contabiliza contra los límites de uso.
 
 La API y el MCP son gratuitos; no se venden planes ni recargas. Confirma tu
 correo y entra en Cuenta para recibir tu primera clave. Las cuentas anteriores
