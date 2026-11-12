@@ -15,58 +15,54 @@ las siguientes llamadas devuelven `200` con `key: null`, incluso con dos pestañ
 Solo se almacena el hash; si se pierde la respuesta hay que revocar la clave y crear
 otra con `POST /account/keys`. Una clave revocada nunca se recrea automáticamente.
 
-Las cuentas nuevas reciben lectura gratuita. Las anteriores mantienen sus
-condiciones hasta aceptar los límites: `GET /account` devuelve `reading_offer`
-y `POST /account/reading/activate` recibe `{"policy_code":"free","policy_version":1}`.
-La aceptación es idempotente, conserva las mismas claves, términos, saldo e historial.
-No se venden planes, recargas ni acceso empresarial; `/account/checkout` devuelve
-`409 offer_retired`. Los registros y comprobantes anteriores siguen disponibles.
+El acceso es gratuito con correo confirmado y límites operativos de uso por cuenta;
+no se venden planes, recargas ni oferta empresarial (`/account/checkout` devuelve
+`409 offer_retired`). Si una sesión corresponde a una cuenta con condiciones
+anteriores, `GET /account` expone `reading_offer` y `POST /account/reading/activate`
+(`{"policy_code":"free","policy_version":1}`) permite activar de forma idempotente
+los límites actuales conservando sus claves e historial.
 
 - Las lecturas normativas exigen API key en la cabecera `X-API-Key` de una cuenta
   con correo confirmado y permisos por operación: `norms:read`, `articles:read`,
   `resolve:run`, `map:read`. `/corpus/status` y `/health` son públicos. Las rutas
-  internas de cuenta (`/account/*`) y compatibilidad histórica (`/billing/*`,
+  internas de cuenta (`/account/*`) y compatibilidad retroactiva (`/billing/*`,
   `/checkout/*`) no forman parte del contrato OpenAPI público.
-- API y MCP comparten cuenta, permisos y consumo. La política activa se consulta
-  en `GET /checkout/catalog` y `GET /account`: `reading_included` indica la oferta
-  pública activa y `account.reading` la cuota asignada a esa cuenta. La activación
-  de lectura incluida conserva condiciones, saldos, ledger e historial previos.
-- Con lectura incluida, un 2xx con resultado consume una consulta mensual por
-  cuenta en el mes calendario UTC. Artículos completos, estructura, búsqueda FTS,
-  resolve y mapa respetan la misma cobertura. No exige saldo ni compra de créditos.
-  Vacíos, `not_found`, fuera de cobertura y errores no consumen cuota mensual.
-  Los contratos anteriores que sigan activos conservan su medición en créditos.
+- API y MCP comparten cuenta, permisos y límites de uso (`GET /account`).
+- Un `2xx` con resultado contabiliza una consulta mensual por cuenta en el mes
+  calendario UTC. Artículos completos, estructura, búsqueda FTS, resolve y mapa
+  respetan la misma cobertura. Vacíos, `not_found`, fuera de cobertura y errores
+  no contabilizan en el tope mensual.
 - `Idempotency-Key` y la misma petición (método, ruta, query y cuerpo) no duplican
   el evento mensual. Otro contenido es otro evento. `X-Request-ID` sirve para
-  soporte y no sustituye idempotencia. Los reintentos cuentan para ráfagas y texto.
+  soporte y no sustituye idempotencia. Los reintentos siguen contando para ráfagas
+  y nodos diarios de texto.
 - Los límites configurables salen de `limits`: peticiones por minuto por cuenta,
   `monthly_queries`, `monthly_period: calendar_utc`, `concurrent_requests`,
-  `search_results`, `response_bytes`, `text_nodes_per_day` y `max_active_keys`.
-  El gratuito no es extracción ilimitada: 5,000 consultas/mes UTC, 50 RPM, cuatro
-  simultáneas, diez resultados, 10,000 nodos de texto/día, 2 MiB/respuesta y dos claves.
-  `reading_included` indica si el acceso está activo.
-- Agotamiento: `429 monthly_quota_exceeded` incluye `limit`, `resets_at` y
-  `Retry-After`; no se soluciona comprando créditos. Otros 429 distinguen
-  `rate_limit_exceeded`, `concurrency_limit_exceeded` y `text_quota_exceeded`.
-  `413 response_too_large` requiere reducir resultados/página. Una falla de
-  autoridad devuelve `503 quota_unavailable`; un timeout o lease vencido requiere
-  reintentar con la misma Idempotency-Key. Ninguna entrega incluida queda autorizada
-  por un contador local en memoria.
-- Cada éxito incluido trae `X-Reading-Quota-Limit`, `X-Reading-Quota-Remaining`,
-  `X-Reading-Quota-Period`, además del identificador del evento. Las respuestas son
-  privadas, incluso si reutilizan contenido: autorización y cuota se aplican en
-  cada hit. `X-Corpus-Revision` identifica contenido y esquema; `latest_version_from`
-  en `/corpus/status` sigue siendo una fecha de vigencia, no una revisión única.
-- El 402 `insufficient_credits` corresponde a condiciones de prepago anteriores
-  que exigen saldo. Un 403 indica falta de permisos; `paid_plan_required` puede
-  aparecer en cuentas que aún conservan el acceso anterior. Desde Cuenta pueden
-  activar la lectura gratuita. No se venden planes ni recargas.
+  `search_results`, `response_bytes`, `text_nodes_per_day` y `max_active_keys`
+  (5,000 consultas/mes UTC, 50 RPM, 4 simultáneas, 10 resultados, 10,000 nodos de
+  texto/día, 2 MiB/respuesta y hasta 2 claves activas).
+- Límites alcanzados: `429 monthly_quota_exceeded` incluye `limit`, `resets_at` y
+  `Retry-After`. Otros `429` distinguen `rate_limit_exceeded`,
+  `concurrency_limit_exceeded` y `text_quota_exceeded`. `413 response_too_large`
+  requiere reducir resultados/página. Una falla de autoridad devuelve
+  `503 quota_unavailable`; un timeout o lease vencido requiere reintentar con la
+  misma `Idempotency-Key`. Ninguna entrega queda autorizada por un contador local
+  en memoria.
+- Cada éxito contabilizado trae `X-Reading-Quota-Limit`,
+  `X-Reading-Quota-Remaining`, `X-Reading-Quota-Period`, además del identificador
+  del evento. Las respuestas son privadas, incluso si reutilizan contenido:
+  autorización y límites de uso se aplican en cada hit. `X-Corpus-Revision`
+  identifica contenido y esquema; `latest_version_from` en `/corpus/status` sigue
+  siendo una fecha de vigencia, no una revisión única.
+- Un `403` indica permisos insuficientes o estado de la clave (`402
+  insufficient_credits` y `403 paid_plan_required` se conservan solo por
+  compatibilidad retroactiva en contratos previos).
 - Entradas inválidas: en la búsqueda, una `q` vacía o fuera de 2 a 500
   caracteres responde `422` con `code: invalid_query`; un slug de norma
   desconocido responde `404` con `code: norm_not_found` y un alias bloqueado,
   `404` con `code: norm_blocked` y el motivo; un artículo inexistente, o un id
   que no es UUID, responde `404` con `code: article_not_found`. Todos llevan
-  `message` en `detail` y ninguno se cobra.
+  `message` en `detail` y ninguno contabiliza en los límites de uso.
 - Cobertura: legislación federal vigente, prospectiva desde el baseline de cada
   norma (la primera fecha de vigencia de sus versiones). Una fecha anterior
   devuelve `outside_coverage` y nunca se presenta texto vigente como histórico:
@@ -74,12 +70,12 @@ No se venden planes, recargas ni acceso empresarial; `/account/checkout` devuelv
   `code: outside_coverage`, `message`, `as_of`, `coverage_start_date` y
   `norm_slug`; la búsqueda responde `200` con `data: []` y
   `meta.coverage.status: outside_coverage`, y `POST /resolve`, con
-  `coverage.status: outside_coverage`. Ninguna de esas respuestas se cobra. Una
-  fecha futura responde `future_not_available` por las mismas vías (`404` en el
-  artículo y la estructura, `meta.coverage.status` en la búsqueda,
-  `coverage.status` en `resolve`), tampoco se cobra, y "futura" es más allá de
-  mañana: el servidor cuenta en UTC y un cliente adelantado (o el MCP, con la
-  fecha de la Ciudad de México) manda su "hoy".
+  `coverage.status: outside_coverage`. Ninguna de esas respuestas contabiliza en
+  los límites de uso. Una fecha futura responde `future_not_available` por las
+  mismas vías (`404` en el artículo y la estructura, `meta.coverage.status` en la
+  búsqueda, `coverage.status` en `resolve`), tampoco contabiliza, y "futura" es
+  más allá de mañana: el servidor cuenta en UTC y un cliente adelantado (o el MCP,
+  con la fecha de la Ciudad de México) manda su "hoy".
 
 ### Compilaciones con derogaciones parciales
 
@@ -105,7 +101,7 @@ en las demás normas.
 - `POST /resolve` — paquete normativo v1
   ([contrato](NORMATIVE_PACKAGE_CONTRACT.md))
 - `POST /map` — mapa normativo (scope `map:read`)
-- `GET /corpus/status` — cifras del corpus y última revisión de las fuentes (sin clave ni cobro)
+- `GET /corpus/status` — cifras del corpus y última revisión de las fuentes (público, sin clave y exento de límites por cuenta)
 
 Las rutas heredadas de consulta de contratos anteriores (`/billing/plans`,
 `/billing/summary`, `/billing/ledger`) se conservan únicamente en ejecución por
@@ -180,8 +176,8 @@ el scope `resolve:run` y genera el evento `resolution.run`.
 
 Fechas previas al baseline devuelven `outside_coverage` con `coverage_start_date`;
 fechas futuras, `future_not_available`. No se reconstruye ni pronostica historia
-normativa. Un paquete sin items (esos dos casos y `not_found`) no se cobra y
-lleva la cabecera `X-Normative-Metering: skipped`.
+normativa. Un paquete sin items (esos dos casos y `not_found`) no contabiliza en
+los límites de uso y lleva la cabecera `X-Normative-Metering: skipped`.
 
 Una cita de artículo con norma reconocible (`"Artículo 1500 LFT"`, o `norm` en la
 petición) cuyo artículo no rige en esa fecha responde `not_found` sin items, en
@@ -224,9 +220,9 @@ configuradas, con vigencia y fuente. No determina de forma exhaustiva el marco
 aplicable a un caso. El [corte del catálogo](CATALOGO.md#mapa-normativo-alcance-del-catálogo)
 describe los temas y las citas disponibles; revisa `coverage`, `articles_missing`
 y `warnings` en cada respuesta.
-Consume una consulta incluida con resultado (2 créditos en contratos anteriores); si no lo detecta responde `200` con
-`coverage_status: "not_found"`, la cabecera `X-Normative-Metering: skipped` y **no se
-cobra**. `query` admite de 2 a 2,000 caracteres. Requiere `map:read`, incluido en las claves estándar de cuentas con lectura incluida. Conserva el catálogo limitado de temas y sus advertencias.
+Contabiliza una consulta cuando devuelve un tema detectado; si no lo detecta responde `200` con
+`coverage_status: "not_found"`, la cabecera `X-Normative-Metering: skipped` y **no
+contabiliza en los límites de uso**. `query` admite de 2 a 2,000 caracteres. Requiere `map:read`, incluido en las claves estándar. Conserva el catálogo limitado de temas y sus advertencias.
 
 La detección compara la consulta con las palabras clave de cada tema del catálogo por
 lexemas en español, sin distinguir acentos, mayúsculas, singular o plural ("liquidaciones"
@@ -344,7 +340,7 @@ un valor supuesto.
 
 ## `GET /corpus/status`
 
-Estado del corpus. No pide clave ni descuenta créditos. La información del monitor
+Estado del corpus. No pide clave ni contabiliza contra los límites de uso. La información del monitor
 se conserva hasta diez minutos. Las cifras se conservan por día UTC y revisión
 del corpus, y se recalculan cuando cambia cualquiera de los dos. La respuesta
 lleva `Cache-Control: no-cache`.
@@ -461,7 +457,7 @@ bloqueado responde `404` como `GET /normas/{slug}`.
 | Nombre | Tipo | Descripción |
 |--------|------|-------------|
 | fecha | date | Fecha de consulta (YYYY-MM-DD); hoy si se omite |
-| include_text | boolean | Incluir texto vigente (default false). Disponible en lectura incluida; fuera de esa política conserva los permisos del contrato anterior |
+| include_text | boolean | Incluir texto vigente paginado (default false) |
 | page | integer | Página de texto cuando `include_text=true` (default 1) |
 | page_size | integer | Nodos con texto por página (default 200, máximo 500) |
 
@@ -470,19 +466,19 @@ nodos de la página pedida, en el orden del documento (cada nodo antes que sus
 hijos). Cada nodo con texto trae `text`, `node_version_id`, su vigencia
 (`valid_from`, `valid_to`), su fuente (`source`, `source_url`, `is_official`) y
 `checksum`, el SHA-256 de ese `text`. `text_page` indica la página, el total de
-nodos y si hay más (`has_more`); cada página es una consulta (1 crédito). Sin
+nodos y si hay más (`has_more`); cada página contabiliza como una consulta. Sin
 `include_text`, `text_page` es `null`.
 
 Los nodos con texto tienen un tope diario por cuenta (día UTC), publicado como
-`text_nodes_per_day` en `GET /api/v1/account` y en `GET /api/v1/checkout/catalog`.
+`text_nodes_per_day` en `GET /api/v1/account`.
 Al rebasarlo la página responde `429` con `code: text_quota_exceeded`, `limit` y
-`Retry-After` (segundos hasta el siguiente día UTC); no se cobra ni se entrega
+`Retry-After` (segundos hasta el siguiente día UTC); no contabiliza en el tope mensual ni se entrega
 texto. Para leer artículos concretos, la búsqueda y `GET /articulos/{id}` no
 cuentan contra ese tope.
 
 Una `fecha` anterior al baseline de la norma responde `404` con
 `code: outside_coverage`, con o sin `include_text`: el árbol y el texto vigentes
-no se presentan como los de esa fecha. No se cobra. Una fecha futura (más allá de
+no se presentan como los de esa fecha y no contabiliza en los límites de uso. Una fecha futura (más allá de
 mañana) responde `404` con `code: future_not_available`.
 
 ```json
@@ -582,14 +578,14 @@ por nombre corto de norma, orden del documento e identificador del artículo.
 | jurisdiccion | string | Filtro por jurisdicción |
 | norma | string | Filtrar por slug de norma (o alias histórico). Desconocido o bloqueado: `404` con `code: norm_not_found` o `norm_blocked` |
 | fecha | date | Fecha de vigencia |
-| limit | integer | Resultados por búsqueda (default 10). La lectura gratuita aplica el máximo de su política activa, actualmente 10. Los contratos anteriores conservan sus topes (hasta 50); un valor mayor se recorta, no se rechaza. `meta.limit` dice cuántos se aplicaron |
+| limit | integer | Resultados por búsqueda (default 10, máximo 10 en la política vigente). Un valor mayor al permitido por la cuenta se recorta, no se rechaza; `meta.limit` indica cuántos se aplicaron |
 
 ### Respuesta
 
-`meta` informa el tope aplicado y la medición: una búsqueda con resultado consume
-una consulta gratuita, con `credits: 0`. Los contratos anteriores conservan el
-costo de 1 crédito con cualquier `limit`. Sin resultados, `data` llega vacío y la petición no se cobra
-(cabecera `X-Normative-Metering: skipped`).
+`meta` informa el tope aplicado y la medición: una búsqueda con resultado
+contabiliza una consulta mensual (`credits: 0`). Sin resultados, `data` llega
+vacío y la petición no contabiliza en los límites de uso (cabecera
+`X-Normative-Metering: skipped`).
 
 `meta.coverage` declara la cobertura en `as_of` (la `fecha` pedida o la de hoy) de
 las normas que abarca la búsqueda: la de `norma` o las que dejan `materia` y
@@ -599,9 +595,9 @@ las normas que abarca la búsqueda: la de `norma` o las que dejan `materia` y
 - `partial`: algunas empiezan después; sus slugs van en `norms_outside_coverage`
   y la búsqueda no las incluye.
 - `outside_coverage`: ninguna tiene texto a esa fecha; `data` llega vacío,
-  `coverage_start_date` dice desde cuándo hay texto y la petición no se cobra.
+  `coverage_start_date` dice desde cuándo hay texto y la petición no contabiliza en los límites de uso.
 - `future_not_available`: la fecha está más allá de mañana; `data` llega vacío y
-  la petición no se cobra (no se pronostican reformas).
+  la petición no contabiliza en los límites de uso (no se pronostican reformas).
 
 Cada artículo llega completo: `text` incluye sus fracciones e incisos en el orden
 del documento, con su marcador («I.», «a)»), y `checksum` es el SHA-256 de ese
@@ -621,8 +617,8 @@ solo).
 {
   "meta": {
     "limit": 10,
-    "max_limit": 50,
-    "credits": 1,
+    "max_limit": 10,
+    "credits": 0,
     "coverage": {"as_of": "2026-10-12", "status": "covered"}
   },
   "data": [
@@ -675,8 +671,8 @@ Con una fecha anterior al baseline de las normas buscadas:
 {
   "meta": {
     "limit": 10,
-    "max_limit": 50,
-    "credits": 1,
+    "max_limit": 10,
+    "credits": 0,
     "coverage": {
       "as_of": "2020-01-01",
       "status": "outside_coverage",

@@ -7,10 +7,9 @@ cuentas, en `https://lexapi.mx`. Usa esa URL en `LEX_API_BASE_URL`.
 
 - Python 3.11 o posterior;
 - una clave con el scope de la operación: `resolve:run`, `map:read`,
-  `norms:read`, `articles:read` o `billing:read`. Créala en
-  [lexapi.mx/cuenta](https://lexapi.mx/cuenta) después de confirmar tu correo.
-  Las cuentas con lectura incluida tienen acceso a todas las funciones de
-  lectura; consulta los permisos y límites activos de tu cuenta;
+  `norms:read` o `articles:read`. Créala en
+  [lexapi.mx/cuenta](https://lexapi.mx/cuenta) después de confirmar tu correo
+  (las claves estándar incluyen todos los permisos de lectura);
 - `Idempotency-Key` estable por operación reintentable.
 
 ## cURL
@@ -44,39 +43,38 @@ with LexApiClient(base_url=base_url, api_key=api_key) as client:
     package = client.resolve(query="Artículo 1 LCM", norm="lcm")
 ```
 
-El SDK cubre `resolve`, `map`, `search_articles`, `norm_structure` y `article`. Los
-errores HTTP levantan `LexApiError` con código de estado y `X-Request-ID`
-cuando está disponible; `402` significa saldo insuficiente en un contrato de
-prepago que exige saldo. La cuota incluida no depende de comprar créditos.
+El SDK cubre `resolve`, `map`, `search_articles`, `norm_structure`, `article`,
+`article_history`, `list_norms`, `norm` y `corpus_status`. Los errores HTTP
+levantan `LexApiError` con código de estado y `X-Request-ID` cuando está
+disponible (`401`, `403`, `404`, `422`, `429`; `402` se conserva solo por
+compatibilidad retroactiva).
 
 ## Límites de uso
 
-Cuenta y `GET /api/v1/checkout/catalog` publican los límites vigentes. La cuota
-incluida se comparte por cuenta, sumando claves, API y MCP, por mes calendario
-UTC. Solo consumen respuestas exitosas con resultado. La misma Idempotency-Key
-y petición no duplica consumo mensual; los reintentos cuentan para ráfagas y
-texto. Se mantienen límites de concurrencia, resultados y tamaño de respuesta.
-Un `limit` de búsqueda mayor se recorta y `meta.limit` indica el valor aplicado.
-Al superar un límite, `429` incluye `Retry-After` (segundos).
-`monthly_quota_exceeded` indica la renovación mensual sin exigir recargas.
-Los contratos anteriores conservan sus condiciones, saldos e historial.
+[Cuenta](https://lexapi.mx/cuenta) muestra el consumo y los límites activos de tu
+cuenta. Los límites se comparten entre claves, API, SDK y MCP por mes calendario
+UTC: solo contabilizan respuestas `2xx` con resultado. La misma `Idempotency-Key`
+e idéntica petición no duplican el consumo mensual, aunque los reintentos siguen
+contando para ráfagas por minuto y nodos diarios de texto. Un `limit` de
+búsqueda mayor al permitido se recorta y `meta.limit` indica el valor aplicado.
+Al alcanzar un límite, `429` incluye `Retry-After` (segundos) y, en
+`monthly_quota_exceeded`, la fecha de renovación mensual UTC.
 
 ## La web
 
-En [lexapi.mx/probar](https://lexapi.mx/probar) ves respuestas reales sin clave
-y pruebas la API con tu clave (resolver una cita, buscar artículos, estructura de
-una norma y mapa normativo): la clave se guarda solo en `sessionStorage` durante
-la pestaña y se envía como `X-API-Key`. La guía en español está en
-[lexapi.mx/docs](https://lexapi.mx/docs). Un `403` indica permisos insuficientes;
-se conserva `paid_plan_required` para contratos anteriores sin acceso a mapa o
-texto completo. [Cuenta](https://lexapi.mx/cuenta) muestra los permisos,
-la cuota incluida cuando corresponde, el saldo anterior y los límites activos.
+En [lexapi.mx/probar](https://lexapi.mx/probar) consultas respuestas reales sin
+clave y pruebas la API con tu clave (resolver una cita, buscar artículos,
+estructura de una norma y mapa normativo): la clave se guarda solo en
+`sessionStorage` durante la pestaña y se envía como `X-API-Key`. La guía y el
+catálogo están en [lexapi.mx/docs](https://lexapi.mx/docs). Un `403` indica
+permisos insuficientes o estado de la clave. [Cuenta](https://lexapi.mx/cuenta)
+muestra tus claves activas y el avance mensual de consultas.
 
 ## OpenAPI
 
 El contrato está en [`openapi-v1.json`](openapi-v1.json) y la referencia
 interactiva en [lexapi.mx/docs/api](https://lexapi.mx/docs/api).
 
-La primera clave se entrega al entrar en Cuenta tras confirmar el correo. Cópiala
-en ese momento: no se vuelve a mostrar. La API y el MCP son gratuitos; no necesitas
-tarjeta ni recargas. Si tenías una cuenta anterior, activa allí la lectura gratuita.
+La primera clave se entrega al entrar en Cuenta tras confirmar tu correo.
+Cópiala en ese momento: no se vuelve a mostrar. La API y el MCP son de acceso
+gratuito; no requieren tarjeta ni existen recargas.

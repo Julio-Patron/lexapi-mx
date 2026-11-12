@@ -89,25 +89,31 @@ todas las normas publicadas. Consulta el
 [alcance del catálogo](docs/CATALOGO.md#mapa-normativo-alcance-del-catálogo) y revisa
 `coverage`, `articles_missing` y `warnings` en cada respuesta.
 
-## Acceso gratuito
+## Acceso gratuito y límites de uso
 
-Las cuentas con lectura incluida pueden consultar artículos completos, estructura,
-búsqueda por términos, resolve y mapa, dentro de su cobertura actual. Se exige
-registro por correo confirmado y API key. La cuota mensual se comparte entre
-API, SDK y MCP, por cuenta y mes calendario UTC; no exige comprar créditos.
-Los valores activos se consultan en [Cuenta](https://lexapi.mx/cuenta) y
-`GET /api/v1/checkout/catalog`; se mantienen límites de resultados, tamaño,
-concurrencia y texto entregado. El acceso no implica extracción ilimitada.
+La API y el servidor MCP son de acceso gratuito con correo confirmado y clave
+obligatoria; no existen planes de pago ni recargas. Al confirmar tu correo y
+entrar en [Cuenta](https://lexapi.mx/cuenta) recibes tu primera clave (se
+muestra una sola vez). API, SDK y MCP comparten los mismos límites de uso por
+cuenta:
 
-Solo consumen éxitos con resultado. Errores, vacíos y fuera de cobertura no
-consumen; un reintento con idéntica Idempotency-Key y petición no duplica cuota
-mensual, pero sí cuenta para ráfagas y texto. Al agotarse la cuota, 429
-`monthly_quota_exceeded` indica cuándo se renueva; no exige una recarga.
+| Límite compartido por cuenta | Valor |
+|---|---|
+| Consultas exitosas con resultado | 5,000 consultas al mes (mes calendario UTC) |
+| Ritmo sostenido | 50 peticiones por minuto |
+| Concurrencia | 4 consultas simultáneas |
+| Búsqueda por términos | Hasta 10 resultados por búsqueda |
+| Lectura paginada de estructura | 10,000 nodos diarios (día UTC) |
+| Tamaño por respuesta | 2 MiB por respuesta |
+| Credenciales | Hasta 2 claves activas |
 
-La API y el MCP son gratuitos; no se venden planes ni recargas. Confirma tu
-correo y entra en [Cuenta](https://lexapi.mx/cuenta) para recibir tu primera
-clave, que se muestra una sola vez. Las cuentas anteriores pueden aceptar
-los límites gratuitos desde Cuenta; sus saldos e historial se conservan.
+Solo contabilizan las respuestas `2xx` con resultado. Los errores, los
+resultados vacíos y las fechas fuera de cobertura (`outside_coverage` o
+`future_not_available`) no contabilizan. Un reintento con la misma
+`Idempotency-Key` y la misma petición (método, ruta, query y cuerpo) no duplica
+el conteo mensual, aunque sigue contando para ráfagas por minuto y nodos diarios
+de texto. Al alcanzar un límite, la API responde `429` con `Retry-After` (y en
+`monthly_quota_exceeded` indica la fecha de renovación mensual UTC).
 
 ## Qué hay en este repositorio
 
@@ -129,6 +135,6 @@ son propiedad de Lex API MX y no forman parte de este repositorio.
 
 - Dudas e incidencias del SDK o del MCP:
   [Issues](https://github.com/Julio-Patron/lexapi-mx/issues).
-- Cuenta, facturación o cobertura: [admin@lexapi.mx](mailto:admin@lexapi.mx).
+- Cuenta, soporte o cobertura: [admin@lexapi.mx](mailto:admin@lexapi.mx).
 - [Aviso de Privacidad](https://lexapi.mx/privacidad) ·
   [Términos y Condiciones](https://lexapi.mx/terminos)
