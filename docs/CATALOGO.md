@@ -365,58 +365,45 @@ cobertura temporal.
 
 ## Acceso gratuito y límites de uso
 
-La API y el MCP son 100 % gratuitos siempre, con correo confirmado y clave obligatoria.
-Al entrar en Cuenta por primera vez se entrega la clave; solo se muestra una vez.
-Los límites de uso (antiabuso) existen únicamente para proteger la estabilidad del servicio
-frente a uso abusivo (extracción masiva o ciclos infinitos de agentes). Las cuentas
-anteriores pueden aceptar estos límites conservando sus saldos e historial. No se
-venden planes, cuotas comerciales, recargas ni acceso empresarial.
+La API y el servidor MCP son de acceso gratuito con correo confirmado y clave
+obligatoria; no existen planes de pago, cuotas comerciales, recargas ni oferta
+empresarial. Al confirmar tu correo y entrar en Cuenta se entrega la primera
+clave (se muestra una sola vez). Los límites de uso protegen la estabilidad del
+servicio frente a extracción masiva o ciclos infinitos de agentes y se comparten
+por cuenta entre API y MCP:
 
-| Límite de uso compartido por cuenta entre API y MCP | Valor |
+| Límite de uso compartido por cuenta | Valor |
 |---|---|
-| Consultas exitosas con resultado por mes calendario UTC | 5,000 |
-| Peticiones por minuto | 50 |
-| Peticiones simultáneas | 4 |
-| Resultados por búsqueda | 10 |
-| Nodos de texto entregados por día | 10,000 |
-| Tamaño máximo por respuesta | 2 MiB |
-| Claves activas | 2 |
+| Consultas exitosas con resultado | 5,000 consultas al mes (mes calendario UTC) |
+| Ritmo sostenido | 50 peticiones por minuto |
+| Concurrencia | 4 consultas simultáneas |
+| Búsqueda por términos | Hasta 10 resultados por búsqueda |
+| Lectura paginada de estructura | 10,000 nodos diarios (día UTC) |
+| Tamaño por respuesta | 2 MiB por respuesta |
+| Credenciales | Hasta 2 claves activas |
 
-La política activa se consulta en `/api/v1/checkout/catalog` y Cuenta. Abre artículos
-completos, estructura, búsqueda por términos, citas, historial y mapa. Vacíos, errores
-y fuera de cobertura no contabilizan en el límite mensual de protección. Los reintentos
-idénticos con `Idempotency-Key` no duplican el conteo mensual; sí cuentan para ráfagas
-y texto diario. Un límite alcanzado responde 429 con `Retry-After`; no exige comprar
-créditos.
+El consumo y los límites activos de la cuenta se consultan en Cuenta. Cubren
+artículos completos, estructura, búsqueda por términos, resolución de citas,
+historial y mapa normativo. Los resultados vacíos, los errores y las fechas
+fuera de cobertura no contabilizan en el límite mensual. Los reintentos
+idénticos con la misma `Idempotency-Key` y la misma petición (método, ruta,
+query y cuerpo) no duplican el conteo mensual, aunque siguen contando para
+ráfagas por minuto y nodos diarios de texto. Al alcanzar un límite, la API
+responde `429` con `Retry-After`.
 
-## Operaciones de contratos anteriores y créditos
+## Operaciones y contabilización
 
-| Operación | Endpoint | Evento | Créditos |
+| Operación | Endpoint | Evento | Contabilización |
 |---|---|---|---|
-| Listar normas | `GET /api/v1/normas` | `norm.list` | 1 |
-| Obtener norma | `GET /api/v1/normas/{slug}` | `norm.get` | 1 |
-| Estructura de una norma | `GET /api/v1/normas/{slug}/estructura` | `norm.structure` | 1 (el texto completo, `include_text`, solo en planes de la API) |
-| Buscar artículos | `GET /api/v1/articulos/search` | `article.search` | 1 (hasta 50 resultados en planes de la API; hasta 10 en el gratuito) |
-| Obtener artículo | `GET /api/v1/articulos/{id}` | `article.get` | 1 |
-| Historial de un artículo | `GET /api/v1/articulos/{id}/historial` | `article.history` | 1 |
-| Resolver una cita o consulta | `POST /api/v1/resolve` | `resolution.run` | 1 |
-| Mapa normativo | `POST /api/v1/map` | `normative_map.run` | 2 (sin tema detectado, `coverage_status: not_found`, no se cobra) |
-
-Solo se cobran respuestas exitosas (2xx) con resultado: una búsqueda sin artículos, un `resolve` sin items y una consulta con una fecha anterior al inicio de cobertura (`outside_coverage`) no se cobran. Un reintento con el mismo `Idempotency-Key` y la misma petición no se cobra dos veces; la clave queda atada al contenido (método, ruta, query y cuerpo).
-
-## Condiciones conservadas de contratos anteriores
-
-Referencia histórica, sin contratación ni recargas disponibles. Las cuentas
-gratuitas anteriores pueden aceptar el acceso actual desde Cuenta.
-
-| Plan | Incluye | Precio (MXN, IVA incluido) |
-|---|---|---|
-| Gratis | 500 créditos por mes calendario (hora de la Ciudad de México), sin acumulación; API y servidor MCP; hasta 2 claves; 10 peticiones por minuto y 200 por día por cuenta; búsquedas de hasta 10 artículos; sin mapa normativo ni texto completo de normas | $0 |
-| API Inicial | 10,000 créditos al mes; mapa normativo y texto completo de normas; hasta 10 claves; 120 peticiones por minuto por clave | $499 al mes o $4,990 al año |
-| API Profesional | 50,000 créditos al mes; mapa normativo y texto completo de normas; hasta 10 claves; 120 peticiones por minuto por clave | $1,499 al mes o $14,990 al año |
-| Recarga | 1,000 créditos que no caducan | $100 |
-
-Cuando un cliente prepago se queda sin saldo, la API responde `402` con el código `insufficient_credits` y un enlace a Cuenta para revisar su acceso.
+| Listar normas | `GET /api/v1/normas` | `norm.list` | 1 consulta (`2xx` con resultado) |
+| Obtener norma | `GET /api/v1/normas/{slug}` | `norm.get` | 1 consulta (`2xx` con resultado) |
+| Estructura de una norma | `GET /api/v1/normas/{slug}/estructura` | `norm.structure` | 1 consulta por llamada o página `include_text` |
+| Buscar artículos | `GET /api/v1/articulos/search` | `article.search` | 1 consulta (`2xx` con artículos; vacío no cuenta) |
+| Obtener artículo | `GET /api/v1/articulos/{id}` | `article.get` | 1 consulta (`2xx` con resultado) |
+| Historial de un artículo | `GET /api/v1/articulos/{id}/historial` | `article.history` | 1 consulta (`2xx` con resultado) |
+| Resolver una cita o consulta | `POST /api/v1/resolve` | `resolution.run` | 1 consulta (`2xx` con `items`; `not_found` y `outside_coverage` no cuentan) |
+| Mapa normativo | `POST /api/v1/map` | `normative_map.run` | 1 consulta (`2xx` con tema detectado; `not_found` no cuenta) |
+| Estado del corpus | `GET /api/v1/corpus/status` | — | Exento (público, sin clave) |
 
 ## Servidor MCP
 

@@ -68,6 +68,20 @@ leer el artículo 47 de la Ley Federal del Trabajo completo, con sus quince
 fracciones, desde Lex API MX y responder con la cita canónica, la fuente oficial
 y el checksum del texto.
 
+## 6. Instrucción recomendada para tu agente
+
+Agrega esta regla en `CLAUDE.md`, `.cursorrules` o el System Prompt de tu agente
+para fijar a `lex-api-mx` como herramienta por defecto en legislación federal
+mexicana:
+
+```markdown
+Para cualquier consulta sobre legislación federal mexicana vigente (Constitución,
+códigos, leyes o reglamentos federales), utiliza siempre las herramientas del
+servidor MCP `lex-api-mx` o la API de `lexapi.mx` en lugar de responder desde la
+memoria del modelo. Cita siempre la `canonical_citation`, incluye la URL de la
+fuente oficial (`source.url`) y conserva el `SHA-256` del texto verificado.
+```
+
 ## Herramientas
 
 | Herramienta | Parámetros obligatorios | Devuelve |
@@ -95,30 +109,29 @@ Cada error llega al agente con la acción para su siguiente llamada.
 | Código | Lo que verá el agente |
 |---|---|
 | 401 | La clave es inválida, expiró o fue revocada. |
-| 402 | Saldo de condiciones anteriores agotado: no reintentar; avisar al responsable para revisar y, si lo desea, activar acceso gratuito en Cuenta. |
-| 403 | Falta un permiso o siguen activas condiciones anteriores. Para `paid_plan_required`, revisar permisos y adhesión voluntaria al acceso gratuito en Cuenta. |
-| 404 | La norma no existe (con la forma de obtener su slug u omitirlo) o, en `get_norm_structure`, la fecha es anterior al inicio de cobertura de la norma (`outside_coverage`, con la fecha desde la que hay texto y la fecha con la que conviene volver a llamar) o es futura (`future_not_available`, con la indicación de volver con `fecha="vigente"`). En `search_mexican_law` y `resolve_legal_citation` la falta de cobertura llega en la respuesta (`meta.coverage` y `coverage`), sin costo. |
-| 429 | Límite de cuenta alcanzado. `Retry-After` indica la espera; `monthly_quota_exceeded` se renueva el siguiente mes UTC y no exige créditos. El SDK solo reintenta esperas cortas (hasta 30 s), hasta dos veces. |
+| 403 | Permiso insuficiente o estado de la clave; revisar scopes y estado en Cuenta. |
+| 404 | La norma no existe (con la forma de obtener su slug u omitirlo) o, en `get_norm_structure` y `get_legal_article`, la fecha es anterior al inicio de cobertura (`outside_coverage`, con la fecha desde la que hay texto) o futura (`future_not_available`, volver con `fecha="vigente"`). En `search_mexican_law` y `resolve_legal_citation` la falta de cobertura llega en la respuesta (`meta.coverage` y `coverage`), sin contabilizar en los límites de uso. |
+| 422 | Parámetro o consulta fuera de rango; ajustar argumentos antes de volver a llamar. |
+| 429 | Límite de uso de la cuenta alcanzado. `Retry-After` indica la espera en segundos; `monthly_quota_exceeded` se renueva el siguiente mes UTC. El SDK solo reintenta esperas cortas (hasta 30 s), hasta dos veces. |
+| 402 | Compatibilidad retroactiva para contratos previos; no reintentar automáticamente. |
 | Red | No se pudo contactar a Lex API MX. |
 
-## Lectura gratuita
+## Acceso gratuito y límites de uso
 
-API y MCP requieren la misma clave de una cuenta con correo confirmado. La política
-activa de Cuenta determina cuota y permisos; la lectura incluida no exige créditos.
-La cuota mensual se comparte entre claves por cuenta y mes UTC. `monthly_quota_exceeded`
-indica cuándo se renueva; no se resuelve comprando créditos. Se mantienen límites de
-texto, resultados, tamaño y concurrencia.
+API y MCP son de acceso gratuito con correo confirmado y requieren la misma clave
+de Cuenta; no se venden planes ni recargas. Los límites de uso (mensual UTC,
+peticiones por minuto, concurrencia, resultados, tamaño y nodos diarios de texto)
+se comparten entre claves por cuenta. Solo las respuestas `2xx` con resultado
+contabilizan en el límite mensual, y `monthly_quota_exceeded` indica cuándo se
+renueva en UTC.
 
-El MCP incluye también mapa, artículo por UUID, catálogo paginado, metadatos
-de norma, historial y estado del corpus. El mapa conserva un catálogo limitado de
+El MCP incluye también mapa, artículo por UUID, catálogo paginado, metadatos de
+norma, historial y estado del corpus. El mapa conserva un catálogo limitado de
 temas y citas; su [alcance publicado](CATALOGO.md#mapa-normativo-alcance-del-catálogo)
-no equivale a determinar todo el marco aplicable a un caso.
-El SDK expone `article`, `list_norms`, `norm`, `article_history` y `corpus_status`.
-Las ocho lecturas normativas aceptan
-`idempotency_key`: conserva identificador y parámetros para el mismo reintento;
-una petición distinta es otro evento. No se eliminan límites de ráfagas por reintentar.
-`get_corpus_status` consulta el estado público y no consume cuota.
-
-La API y el MCP son gratuitos; no se venden planes ni recargas. Confirma tu
-correo y entra en Cuenta para recibir tu primera clave. Las cuentas anteriores
-pueden aceptar allí los límites gratuitos, conservando saldos e historial.
+no equivale a determinar todo el marco aplicable a un caso. El SDK expone
+`article`, `list_norms`, `norm`, `article_history` y `corpus_status`. Las ocho
+lecturas normativas aceptan `idempotency_key`: conserva identificador y
+parámetros para el mismo reintento sin duplicar el conteo mensual (una petición
+distinta es otro evento y los reintentos siguen contando para ráfagas y texto
+diario). `get_corpus_status` consulta el estado público y no contabiliza contra
+los límites de uso.

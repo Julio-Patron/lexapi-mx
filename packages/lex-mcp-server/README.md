@@ -33,7 +33,7 @@ Las lecturas de metadatos, historial y estado no reciben fecha.
 ## Instalación
 
 Requiere [uv](https://docs.astral.sh/uv/) y una clave de Lex API MX. API y MCP son
-siempre gratuitos y comparten los límites de uso por cuenta. Confirma tu correo
+de acceso gratuito y comparten los límites de uso por cuenta. Confirma tu correo
 y genera tu clave en [lexapi.mx/cuenta](https://lexapi.mx/cuenta).
 
 ```json
@@ -68,12 +68,12 @@ trabajo sin responsabilidad para el patrón? Cita el artículo exacto.*
 ## Errores
 
 Los errores de la API llegan al modelo como errores de herramienta legibles y
-con la acción para la siguiente llamada: clave inválida (401), permiso faltante
-o condiciones anteriores (403), saldo anterior agotado (402: no reintentar y avisar
-al responsable para revisar y activar voluntariamente acceso gratuito en Cuenta), norma inexistente o fecha
-anterior a la cobertura (404: qué slug o qué fecha usar) y límite de peticiones
-(429). Ante un 429 con espera de 30 segundos o menos, el servidor reintenta solo
-hasta dos veces.
+con la acción para la siguiente llamada: clave inválida (`401`), permiso
+insuficiente o estado de la clave (`403`), norma inexistente o fecha fuera de
+cobertura (`404`: qué slug o qué fecha usar), parámetros inválidos (`422`) y
+límite de uso alcanzado (`429`; `402` se conserva solo por compatibilidad
+retroactiva). Ante un `429` con espera de 30 segundos o menos, el servidor
+reintenta solo hasta dos veces.
 
 ## Código fuente
 
@@ -81,24 +81,22 @@ hasta dos veces.
 (licencia MIT). También está en el [MCP Registry](https://registry.modelcontextprotocol.io)
 como `io.github.Julio-Patron/lex-api-mx`.
 
-## Lectura gratuita
+## Acceso gratuito y límites de uso
 
-API y MCP requieren la misma clave de una cuenta con correo confirmado. La política
-activa de Cuenta determina límites de uso y permisos; la lectura no exige créditos.
-El límite mensual se comparte entre claves por cuenta y mes UTC. `monthly_quota_exceeded`
-indica cuándo se renueva; no se resuelve comprando créditos. Se mantienen límites de
-texto, resultados, tamaño y concurrencia.
+API y MCP son de acceso gratuito con correo confirmado y requieren la misma
+clave; no existen planes de pago ni recargas. Ambos canales comparten límites
+de uso por cuenta (mes calendario UTC, peticiones por minuto, concurrencia,
+resultados, tamaño y nodos diarios de texto). Solo las respuestas `2xx` con
+resultado contabilizan contra el límite mensual, y `monthly_quota_exceeded`
+indica cuándo se renueva en UTC.
 
-El MCP incluye búsqueda, estructura, resolve, `map_legal_topic`,
+El MCP expone las ocho lecturas normativas (`resolve_legal_citation`,
+`search_mexican_law`, `get_norm_structure`, `map_legal_topic`,
 `get_legal_article`, `list_legal_norms`, `get_legal_norm`,
-`get_legal_article_history` y `get_corpus_status`.
-El mapa conserva un catálogo limitado de temas y citas; no determina todo el marco
-aplicable a un caso. Revisa `coverage`, `articles_missing` y `warnings`.
-Las ocho lecturas normativas aceptan
-`idempotency_key`: conserva identificador y parámetros para el mismo reintento;
-una petición distinta es otro evento. No se eliminan límites de ráfagas por reintentar.
-`get_corpus_status` consulta el estado público y no contabiliza contra los límites de uso.
-
-La API y el MCP son gratuitos; no se venden planes ni recargas. Confirma tu
-correo y entra en Cuenta para recibir tu primera clave. Las cuentas anteriores
-pueden aceptar allí los límites gratuitos, conservando saldos e historial.
+`get_legal_article_history`) y `get_corpus_status`. El mapa conserva un
+catálogo limitado de temas y citas; no determina todo el marco aplicable a un
+caso (`coverage`, `articles_missing` y `warnings`). Las ocho lecturas
+normativas aceptan `idempotency_key`: conserva identificador y parámetros para
+el mismo reintento sin duplicar el conteo mensual (los reintentos siguen
+contando para ráfagas y texto diario). `get_corpus_status` consulta el estado
+público y no contabiliza contra los límites de uso.
